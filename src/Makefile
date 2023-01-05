@@ -19,10 +19,10 @@ HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
 
 # 実行ファイル名
-TARGET_FILE = pingpong.x
+TARGET_FILE = block.x
 
 # ヘッダ検索パス
-INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
+INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k -I${XDEV68K_DIR}/include/zlib
 
 # コンパイルフラグ
 COMMON_FLAGS = -m68000 $(INCLUDE_FLAGS) -z-stack=327680
@@ -40,10 +40,10 @@ ASM_SRCS =
 # リンク対象のライブラリファイル
 LIBS =\
 	${XDEV68K_DIR}/lib/xc/CLIB.L \
-	${XDEV68K_DIR}/lib/xc/BASLIB.L \
 	${XDEV68K_DIR}/lib/xc/DOSLIB.L \
 	${XDEV68K_DIR}/lib/xc/IOCSLIB.L \
 	${XDEV68K_DIR}/lib/xc/FLOATFNC.L \
+	${XDEV68K_DIR}/lib/zlib/libz.a \
 	${XDEV68K_DIR}/lib/m68k_elf/m68000/libgcc.a
 
 # 中間ファイル生成用ディレクトリ
@@ -57,10 +57,10 @@ OBJS =	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
 HLK_LINK_LIST = $(INTERMEDIATE_DIR)/_lk_list.tmp
 
 # Distribution package 
-PACKAGE_FILE = ../GIFEX030.ZIP
+PACKAGE_FILE = ../PINGP010.ZIP
 
 # Document file
-DOCUMENT_FILE = GIFEX.DOC
+DOCUMENT_FILE = PINGP010.DOC
 
 # デフォルトのターゲット
 all : ${INTERMEDIATE_DIR}/$(TARGET_FILE)

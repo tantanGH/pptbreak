@@ -1,9 +1,16 @@
 #include "crtc.h"
 
-//
-//  initialize screen
-//
-int crtc_initialize_screen(int mode) {
+static void set_palette_65536() {
+
+  volatile unsigned short* palette_ptr = PALETTE;
+
+  for (int i = 0x0001; i <= 0x10000; i += 0x0202) {
+    *palette_ptr++ = (unsigned short)i;
+    *palette_ptr++ = (unsigned short)i;
+  }
+}
+
+int crtc_set_mode(int mode) {
 
   // return code
   int rc = -1;
@@ -53,7 +60,7 @@ int crtc_initialize_screen(int mode) {
 
       SET_SYSP;                     // system port for dot clock change - Inside/Out p44
 
-      VDC_R1[0] = 3;            // memory mode 3
+      VDC_R0[0] = 3;            // memory mode 3
 
       SCON[1] = 0x000b + 4;         // R02 + 4
 
@@ -114,7 +121,7 @@ int crtc_initialize_screen(int mode) {
 
       RESET_SYSP;                     // system port for dot clock change - Inside/Out p44
 
-      VDC_R1[0] = 3;              // memory mode 3
+      VDC_R0[0] = 3;              // memory mode 3
 
 //      SCON[1] = 0x0011 + 4;           // R02 + 4
 
@@ -176,7 +183,7 @@ int crtc_initialize_screen(int mode) {
 
       RESET_SYSP;                 // system port for dot clock change - Inside/Out p44
 
-      VDC_R1[0] = 3;              // memory mode 3
+      VDC_R0[0] = 3;              // memory mode 3
 
 //      SCON[1] = 0x001c + 4;
 
@@ -218,7 +225,7 @@ int crtc_initialize_screen(int mode) {
 
       RESET_SYSP;                 // system port for dot clock change - Inside/Out p44
 
-      VDC_R1[0] = 7;              // memory mode 7 (for XEiJ only)
+      VDC_R0[0] = 7;              // memory mode 7 (for XEiJ only)
   
 //      SCON[1] = 0x001c + 4;           // R02 + 0x04
 
@@ -242,29 +249,7 @@ int crtc_initialize_screen(int mode) {
 
   }
 
-  return rc;
-}
+  set_palette_65536();
 
-// initialize 65536 color pallet
-int crtc_initialize_palette(int mode) {
-
-  volatile unsigned short* palette_ptr = PALETTE;
-  int rc = -1;
-
-  switch (mode) {
-    case SCREEN_MODE_384x256:
-    case SCREEN_MODE_512x512:
-    case SCREEN_MODE_768x512:
-    case SCREEN_MODE_768x512_FULL:
-      for (int i = 0x0001; i <= 0x10000; i += 0x0202) {
-        *palette_ptr++ = (unsigned short)i;
-        *palette_ptr++ = (unsigned short)i;
-      }
-      rc = 0;
-      break;
-    default:
-      break;
-  }
-    
   return rc;
 }
