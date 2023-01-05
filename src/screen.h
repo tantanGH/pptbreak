@@ -50,5 +50,6 @@ void screen_reset(SCREEN_HANDLE* scr);
 void screen_fill_panel(SCREEN_HANDLE* scr, int color, int panel);
 void screen_init_font(SCREEN_HANDLE* scr);
 void screen_put_text(SCREEN_HANDLE* scr, int x, int y, int color, const char* text);
+void screen_put_text_center(SCREEN_HANDLE* scr, int x, int y, int width, int color, const char* text);
 
 #endif

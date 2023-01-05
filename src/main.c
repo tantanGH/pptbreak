@@ -43,16 +43,6 @@ void setup_screen(SCREEN_HANDLE* scr) {
         
   screen_init(scr);
   screen_init_font(scr);
-
-  // setup game panel
-  screen_fill_panel(scr, 1, 0);
-
-  // setup score panel
-  screen_put_text(scr, scr->panel_score_x + 8,   8, 2, "HIGH SCORE");
-  screen_put_text(scr, scr->panel_score_x + 8,  20, 1, "     76500");
-  screen_put_text(scr, scr->panel_score_x + 8,  40, 2, "1UP");
-  screen_put_text(scr, scr->panel_score_x + 8,  50, 1, "         0");
-  screen_put_text(scr, scr->panel_score_x + 8, 200, 1, "ROUND 1");
 }
 
 // setup sprite patterns
@@ -108,7 +98,7 @@ static void setup_sprite_patterns(SPRITE_PATTERN* spp_bar,
 void setup_sprites(SCREEN_HANDLE* scr, 
                    SPRITE* sp_bar, 
                    SPRITE* sp_ball, 
-                   SPRITE* sp_blocks[],
+                   SPRITE* sp_blocks,
                    SPRITE_PATTERN* spp_bar,
                    SPRITE_PATTERN* spp_ball,
                    SPRITE_PATTERN* spp_block1,
@@ -128,16 +118,16 @@ void setup_sprites(SCREEN_HANDLE* scr,
   sp_ball->spp = spp_ball;
 
   for (int i = 0; i < 48; i++) {
-    sp_blocks[i]->sprite_id = 5 + i*2;
-    sp_blocks[i]->pos_x = 16 + (i % 8) * 32;
-    sp_blocks[i]->pos_y = 16 + (i / 8) * 16;
-    sp_blocks[i]->priority = 3;
+    sp_blocks[i].sprite_id = 5 + i*2;
+    sp_blocks[i].pos_x = 16 + (i % 8) * 32;
+    sp_blocks[i].pos_y = 16 + (i / 8) * 16;
+    sp_blocks[i].priority = 3;
     if (i < 16) {
-      sp_blocks[i]->spp = spp_block1;
+      sp_blocks[i].spp = spp_block1;
     } else if (i < 32) {
-      sp_blocks[i]->spp = spp_block2;
+      sp_blocks[i].spp = spp_block2;
     } else {
-      sp_blocks[i]->spp = spp_block3;
+      sp_blocks[i].spp = spp_block3;
     }
   }
 
@@ -177,7 +167,17 @@ int main(int argc, char* argv[]) {
   static SPRITE sp_bar;
   static SPRITE sp_ball;
   static SPRITE sp_blocks[48];
-  setup_sprites(&scr, &sp_bar, &sp_ball, (SPRITE**)&sp_blocks, &spp_bar, &spp_ball, &spp_block1, &spp_block2, &spp_block3);
+  setup_sprites(&scr, &sp_bar, &sp_ball, &sp_blocks[0], &spp_bar, &spp_ball, &spp_block1, &spp_block2, &spp_block3);
+
+  // setup game panel
+  screen_fill_panel(&scr, 1, 0);
+
+  // setup score panel
+  screen_put_text(&scr, scr.panel_score_x + 8,   8, 2, "HIGH SCORE");
+  screen_put_text(&scr, scr.panel_score_x + 8,  20, 1, "     76500");
+  screen_put_text(&scr, scr.panel_score_x + 8,  40, 2, "1UP");
+  screen_put_text(&scr, scr.panel_score_x + 8,  50, 1, "         0");
+  screen_put_text(&scr, scr.panel_score_x + 8, 200, 1, "ROUND 1");
 
   // ball velocity
   int ball_ax = 1;
@@ -198,9 +198,9 @@ int main(int argc, char* argv[]) {
     sp_scroll(&sp_blocks[i]);
   }
 
-  screen_put_text(&scr, (scr.panel_game_width-8*5)/2, 150, 1, "READY");
+  screen_put_text_center(&scr, 0, 150, scr.panel_game_width, 1, "READY");
   wait_seconds(3);
-  screen_put_text(&scr, (scr.panel_game_width-8*5)/2, 150, 1, "     ");
+  screen_put_text_center(&scr, 0, 150, scr.panel_game_width, 1, "     ");
 
   sp_scroll(&sp_ball);
 
@@ -252,21 +252,23 @@ int main(int argc, char* argv[]) {
   }
 
   if (rc != 0) {
-    screen_put_text(&scr, scr.panel_game_x + (scr.panel_game_width-8*9)/2, 150, 1, "GAME OVER");
+    screen_put_text_center(&scr, 0, 150, scr.panel_game_width, 1, "GAME OVER");
   }
 
   // key wait
   for (;;) {
     if (B_KEYSNS() != 0) {
-      int key_code = B_KEYINP();
-      if (key_code == (9*8 + 6) ||      // ENTER
-          key_code == (6*8 + 5) ||      // SPACE
-          key_code == (0*8 + 1)) {      // ESC
+      int scan_code = B_KEYINP() >> 8;
+      if (scan_code == (3*8 + 5) ||       // CR
+          scan_code == (9*8 + 6) ||       // ENTER (10-key)
+          scan_code == (6*8 + 5) ||       // SPACE
+          scan_code == (0*8 + 1)) {       // ESC
             break;
           }
     }
   }
 
+  // resume screen
   screen_reset(&scr);
 
   return rc;

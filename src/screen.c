@@ -85,3 +85,10 @@ void screen_put_text(SCREEN_HANDLE* scr, int x, int y, int color, const char* te
     TEXTPUT(x + 8*i, y, &scr->font_data_8x8[text[i]]);
   }
 }
+
+// put text in 8x8 bold font with centering
+void screen_put_text_center(SCREEN_HANDLE* scr, int x, int y, int width, int color, const char* text) {
+  int len = strlen(text);
+  int cx = x + ((width - 8 * len)>>1);
+  screen_put_text(scr,cx,y,color,text);
+}
