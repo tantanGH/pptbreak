@@ -39,11 +39,11 @@ ASM_SRCS =
 
 # リンク対象のライブラリファイル
 LIBS =\
+  ./ext/libpngex.a \
 	${XDEV68K_DIR}/lib/xc/CLIB.L \
 	${XDEV68K_DIR}/lib/xc/DOSLIB.L \
 	${XDEV68K_DIR}/lib/xc/IOCSLIB.L \
 	${XDEV68K_DIR}/lib/xc/FLOATFNC.L \
-	${XDEV68K_DIR}/lib/zlib/libz.a \
 	${XDEV68K_DIR}/lib/m68k_elf/m68000/libgcc.a
 
 # 中間ファイル生成用ディレクトリ
@@ -57,7 +57,7 @@ OBJS =	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
 HLK_LINK_LIST = $(INTERMEDIATE_DIR)/_lk_list.tmp
 
 # Distribution package 
-PACKAGE_FILE = ../PINGP010.ZIP
+PACKAGE_FILE = ../PPTBK010.ZIP
 
 # Document file
 DOCUMENT_FILE = PINGP010.DOC

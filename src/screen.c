@@ -3,6 +3,7 @@
 
 #include "screen.h"
 #include "crtc.h"
+#include "ext/png.h"
 
 // clear and initialize screen and sprites
 void screen_init(SCREEN_HANDLE* scr) {
@@ -42,15 +43,15 @@ void screen_reset(SCREEN_HANDLE* scr) {
   TPALET2(4, scr->original_tpalette[2]);      
 }
 
-// fill panel
-void screen_fill_panel(SCREEN_HANDLE* scr, int color, int panel) {
+// fill panel (graphic)
+void screen_fill_panel(SCREEN_HANDLE* scr, int panel, int color) {
   if (panel == 0) {
     // game panel
     struct FILLPTR fill = {
       scr->panel_game_x,
       scr->panel_game_y,
       scr->panel_game_x + scr->panel_game_width - 1,
-      scr->panel_game_y + scr->panel_game_height - 1,
+      scr->panel_game_y + scr->panel_game_height*2 - 1,     // for scroll area consideration
       scr->panel_colors[color]};
     FILL(&fill);
   } else if (panel == 1) {
@@ -62,6 +63,39 @@ void screen_fill_panel(SCREEN_HANDLE* scr, int color, int panel) {
       scr->panel_score_y + scr->panel_score_height - 1,
       scr->panel_colors[color]};
     FILL(&fill);
+  }
+}
+
+// fill panel (text)
+void screen_clear_panel_text(SCREEN_HANDLE* scr, int panel) {
+  if (panel == 0) {
+
+    // game panel
+    for (int i = 0; i < 4; i++) {
+      struct TXFILLPTR fill = {
+        i,
+        scr->panel_game_x,
+        scr->panel_game_y,
+        scr->panel_game_x + scr->panel_game_width - 1,
+        scr->panel_game_y + scr->panel_game_height*2 - 1,   // for scroll area consideration
+        0};
+      TXFILL(&fill);
+    }
+
+  } else if (panel == 1) {
+
+    // score panel
+    for (int i = 0; i < 4; i++) {
+      struct TXFILLPTR fill = {
+        i,
+        scr->panel_score_x,
+        scr->panel_score_y,
+        scr->panel_score_x + scr->panel_score_width - 1,
+        scr->panel_score_y + scr->panel_score_height - 1,
+        0};
+      TXFILL(&fill);
+    }
+
   }
 }
 
@@ -91,4 +125,29 @@ void screen_put_text_center(SCREEN_HANDLE* scr, int x, int y, int width, int col
   int len = strlen(text);
   int cx = x + ((width - 8 * len)>>1);
   screen_put_text(scr,cx,y,color,text);
+}
+
+// scroll screen (graphic)
+void screen_scroll(SCREEN_HANDLE* scr, int x, int y) {
+  SCROLL(0, x % scr->total_width, y % scr->total_height);
+  SCROLL(1, x % scr->total_width, y % scr->total_height);
+  SCROLL(2, x % scr->total_width, y % scr->total_height);
+  SCROLL(3, x % scr->total_width, y % scr->total_height);
+}
+
+// load png image
+void screen_load_png(SCREEN_HANDLE* scr, int x, int y, int brightness, const char* png_file_name) {
+
+  static PNG_DECODE_HANDLE png;
+
+  png.input_buffer_size = 65536;
+  png.output_buffer_size = 65536 * 2;
+  png.use_high_memory = 0;
+  png.brightness = brightness;
+  png.offset_x = x;
+  png.offset_y = y;
+
+  png_init(&png);
+  png_load(&png, png_file_name);
+  png_close(&png);
 }

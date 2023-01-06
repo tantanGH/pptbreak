@@ -26,6 +26,10 @@ typedef struct {
   int sprite_id;
   int pos_x;
   int pos_y;
+  int pos_z;      // optional
+  int pos_x2;     // optional
+  int pos_y2;     // optional
+  int pos_z2;     // optional
   int priority;
   SPRITE_PATTERN* spp;
 } SPRITE;

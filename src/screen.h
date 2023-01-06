@@ -21,6 +21,7 @@ typedef struct {
   // game panel
   int panel_game_width;
   int panel_game_height;
+  int panel_game_depth;
   int panel_game_x;
   int panel_game_y;
 
@@ -31,7 +32,7 @@ typedef struct {
   int panel_score_y;
 
   // panel colors
-  int panel_colors[ 4 ];
+  int panel_colors[ 5 ];
 
   // text colors
   int text_colors[ 4 ];
@@ -47,9 +48,12 @@ typedef struct {
 // prototype declarations
 void screen_init(SCREEN_HANDLE* scr);
 void screen_reset(SCREEN_HANDLE* scr);
-void screen_fill_panel(SCREEN_HANDLE* scr, int color, int panel);
+void screen_fill_panel(SCREEN_HANDLE* scr, int panel, int color);
+void screen_clear_panel_text(SCREEN_HANDLE* scr, int panel);
 void screen_init_font(SCREEN_HANDLE* scr);
 void screen_put_text(SCREEN_HANDLE* scr, int x, int y, int color, const char* text);
 void screen_put_text_center(SCREEN_HANDLE* scr, int x, int y, int width, int color, const char* text);
+void screen_scroll(SCREEN_HANDLE* scr, int x, int y);
+void screen_load_png(SCREEN_HANDLE* scr, int x, int y, int brightness, const char* png_file_name);
 
 #endif
