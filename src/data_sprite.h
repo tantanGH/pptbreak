@@ -1,9 +1,5 @@
-//
-//  generated with PowerPoint & png2sp (https://github.com/tantanGH/png2sp/)
-//
-
-#ifndef __H_SPRITE_PATTERN__
-#define __H_SPRITE_PATTERN__
+#ifndef __H_DATA_SPRITE__
+#define __H_DATA_SPRITE__
 
 unsigned short sp_pattern_data_bar1[] = {
 
@@ -192,7 +188,6 @@ unsigned short sp_palette_data_star2[] = {
     0x0000,0x0001,0xf7bd,0xf7bd,0xef7b,0xffff,0xf7bd,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,
 };
 
-
 unsigned short sp_pattern_data_star3[] = {
 
     /* sprite pattern data 0 */
@@ -210,6 +205,5 @@ unsigned short sp_pattern_data_star3[] = {
 unsigned short sp_palette_data_star3[] = {
     0x0000,0x0001,0xcfab,0xcfeb,0xffdf,0x7fdf,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,
 };
-
 
 #endif

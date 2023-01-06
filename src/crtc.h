@@ -14,10 +14,6 @@
 #define SYSP         ((volatile unsigned char*)0xE8E007)     // system port (Inside/Out X68030 p44)
 #define SCON        ((volatile unsigned short*)0xEB080A)     // p173,185,235 (SP control)
 
-//#define BG_SCROLL   ((volatile unsigned short*)0xEB0808)     // p190
-//#define BG_DATA0    ((volatile unsigned short*)0xEBC000)     // p174,177
-//#define BG_DATA1    ((volatile unsigned short*)0xEBE000)     // p174,177
-
 // screen mode
 #define SCREEN_MODE_384x256         (0)
 #define SCREEN_MODE_512x512         (1)

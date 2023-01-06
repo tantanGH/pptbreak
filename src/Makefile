@@ -39,7 +39,6 @@ ASM_SRCS =
 
 # リンク対象のライブラリファイル
 LIBS =\
-  ./ext/libpngex.a \
 	${XDEV68K_DIR}/lib/xc/CLIB.L \
 	${XDEV68K_DIR}/lib/xc/DOSLIB.L \
 	${XDEV68K_DIR}/lib/xc/IOCSLIB.L \
@@ -60,7 +59,7 @@ HLK_LINK_LIST = $(INTERMEDIATE_DIR)/_lk_list.tmp
 PACKAGE_FILE = ../PPTBK010.ZIP
 
 # Document file
-DOCUMENT_FILE = PINGP010.DOC
+DOCUMENT_FILE = PPTBREAK.DOC
 
 # デフォルトのターゲット
 all : ${INTERMEDIATE_DIR}/$(TARGET_FILE)

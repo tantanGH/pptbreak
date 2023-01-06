@@ -5,9 +5,11 @@
 #include <iocslib.h>
 #include <doslib.h>
 
+#include "crtc.h"
 #include "screen.h"
 #include "sprite.h"
-#include "sprite_pattern.h"
+#include "data_sprite.h"
+#include "data_logo.h"
 
 #define KEY_SCAN_CODE_CR     (3*8 + 5)
 #define KEY_SCAN_CODE_ENTER  (9*8 + 6)
@@ -15,6 +17,9 @@
 #define KEY_SCAN_CODE_ESC    (0*8 + 1)
 #define KEY_SCAN_CODE_LEFT   (7*8 + 3)
 #define KEY_SCAN_CODE_RIGHT  (7*8 + 5)
+
+#define JOY_LEFT  (4)
+#define JOY_RIGHT (8)
 
 // sprite pattern set
 typedef struct {
@@ -74,6 +79,16 @@ void setup_screen(SCREEN_HANDLE* scr) {
         
   screen_init(scr);
   screen_init_font(scr);
+}
+
+// resume screen
+void resume_screen(SCREEN_HANDLE* scr) {
+
+  // resume screen
+  screen_clear_panel_text(scr,0);
+  screen_clear_panel_text(scr,1);
+  screen_reset(scr);
+
 }
 
 // setup sprite patterns
@@ -200,7 +215,7 @@ void setup_sprites(SCREEN_HANDLE* scr, SPRITE_SET* sp_set, SPRITE_PATTERN_SET* s
     sp_star->pos_z = (rand() % scr->panel_game_depth);                                // 0 <= z < 2880
     sp_star->pos_x2 = (rand() % scr->panel_game_depth) - scr->panel_game_depth / 2;   // -1440 <= x2 < 1440
     sp_star->pos_y2 = (rand() % scr->panel_game_depth) - scr->panel_game_depth / 2;   // -1440 <= y2 < 1440
-    sp_star->pos_z2 = 80;   // velocity
+    sp_star->pos_z2 = 80;   // z-velocity
     sp_star->priority = 3;
     switch (rand() % 3) {
       case 0:
@@ -274,7 +289,8 @@ int game_opening(GAME_HANDLE* game) {
 
   screen_scroll(scr, 0, 256);
 
-  screen_load_png(scr, 7, 50, 100, "title2.png");
+  //screen_load_png(scr, 7, 50, 100, "title2.png");
+  screen_put_image(scr, 7, 50, 269, 41, logo_data);
 
   do {
 
@@ -424,22 +440,46 @@ int game_ending(GAME_HANDLE* game) {
 
 // game over
 int game_over(GAME_HANDLE* game) {
+  
   SCREEN_HANDLE* scr = game->scr;
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "GAME OVER");
-  return wait_key(20);
+  
+  int scan_code = wait_key(20);
+
+  // sprite pointers
+  SPRITE* sp_bar = &(game->sp_set->sp_bar);
+  sp_bar->priority = 0;
+  sp_scroll(sp_bar);
+
+  SPRITE* sp_ball = &(game->sp_set->sp_ball);
+  sp_ball->priority = 0;
+  sp_scroll(sp_ball);
+
+  for (int i = 0; i < 48; i++) {  
+    SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
+    sp_block->priority = 0;
+    sp_scroll(sp_block);
+  }
+
+  return scan_code;
+}
+
+// game open
+void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set) {
+  game->high_score = 76500;
+  game->score = 0;
+  game->round = 1;
+  game->scr = scr;
+  game->sp_set = sp_set;
 }
 
 // game close
 void game_close(GAME_HANDLE* game) {
-  // resume screen
-  screen_reset(game->scr);
+  resume_screen(game->scr);
 }
 
 // main
 int main(int argc, char* argv[]) {
-
-  // exit code
-  int rc = 0;
 
   // randomaize
   srand((unsigned int)time(NULL));
@@ -461,85 +501,112 @@ int main(int argc, char* argv[]) {
   
   // initialize game object
   static GAME_HANDLE game;
-  game.high_score = 76500;
-  game.score = 0;
-  game.round = 1;
-  game.scr = &scr;
-  game.sp_set = &sp_set;
+  game_open(&game, &scr, &sp_set);
 
   // game opening
   int scan_code = game_opening(&game);
   if (scan_code == KEY_SCAN_CODE_ESC) goto exit;
 
-  // round start
-  game_round_start(&game);
+  // round loop
+  int rc = 0;
+  do {
 
-  // sprite pointers
-  SPRITE* sp_bar = &(sp_set.sp_bar);
-  SPRITE* sp_ball = &(sp_set.sp_ball);
-  SPRITE* sp_blocks = &(sp_set.sp_blocks[0]);
+    // sprite pointers
+    SPRITE* sp_bar = &(sp_set.sp_bar);
+    SPRITE* sp_ball = &(sp_set.sp_ball);
+    SPRITE* sp_blocks = &(sp_set.sp_blocks[0]);
 
-  // game loop
-  for (;;) {
+    // round start
+    game_round_start(&game);
 
-#define JOY_LEFT  (4)
-#define JOY_RIGHT (8)
+    // game loop
+    for (;;) {
 
-    // joy stick & keyboard cursor check
-    int joy = JOYGET(0);
-    if ((joy & JOY_LEFT) == 0 && sp_bar->pos_x >= scr.panel_game_x+4) {
-      sp_bar->pos_x -= sp_bar->pos_x2;
-    }
-    if ((joy & JOY_RIGHT) == 0 && sp_bar->pos_x <= scr.panel_game_x + scr.panel_game_width - sp_bar->spp->size_x*16) {
-      sp_bar->pos_x += sp_bar->pos_x2;
-    }
-
-    // collision check (ball and wall)
-    sp_ball->pos_x += sp_ball->pos_x2;
-    sp_ball->pos_y += sp_ball->pos_y2;
-    if (sp_ball->pos_x < scr.panel_game_x) {
-      sp_ball->pos_x2 = 1 + rand() % 4;
-      sp_ball->pos_x += 2*(0 - sp_ball->pos_x);
-    }
-    if (sp_ball->pos_x + 8 > scr.panel_game_x + scr.panel_game_width) {
-      sp_ball->pos_x2 = -(1 + rand() % 4);
-      sp_ball->pos_x -= 2*(sp_ball->pos_x+8 - scr.panel_game_x - scr.panel_game_width);
-    }
-
-    // collision check (ball and bar)
-    if (sp_ball->pos_x+8 >= sp_bar->pos_x && sp_ball->pos_x+8 <= sp_bar->pos_x + 64 &&
-        sp_ball->pos_y+10 >= sp_bar->pos_y && sp_ball->pos_y+10 <= sp_bar->pos_y+12) {
-          sp_ball->pos_y2 = -(1 + rand() % 4);
-          sp_ball->pos_y -= 2*(sp_ball->pos_y+10 - sp_bar->pos_y);
+#ifdef USE_JOYSTICK
+      // joy stick check
+      int joy = JOYGET(0);
+      if ((joy & JOY_LEFT) == 0) {
+        if (sp_bar->pos_x > scr.panel_game_x) {
+          sp_bar->pos_x -= sp_bar->pos_x2;
         }
-    if (sp_ball->pos_y < sp_blocks[40].pos_y+8) {
-      sp_ball->pos_y2 = (1 + rand() % 4);
-      sp_ball->pos_y += 2*(sp_blocks[40].pos_y+8 - sp_ball->pos_y);
+      }
+      if ((joy & JOY_RIGHT) == 0) {
+        if (sp_bar->pos_x + 16 * sp_bar->spp->size_x < scr.panel_game_x + scr.panel_game_width) {
+          sp_bar->pos_x += sp_bar->pos_x2;
+        }
+      }
+#endif
+
+      // keyboard check
+      if (B_KEYSNS() != 0) {
+        int scan_code = B_KEYINP() >> 8;
+        switch (scan_code) {
+          case KEY_SCAN_CODE_LEFT:
+            if (sp_bar->pos_x > scr.panel_game_x) {
+              sp_bar->pos_x -= sp_bar->pos_x2;
+            }
+            break;
+          case KEY_SCAN_CODE_RIGHT:
+            if (sp_bar->pos_x + 16 * sp_bar->spp->size_x < scr.panel_game_x + scr.panel_game_width) {
+              sp_bar->pos_x += sp_bar->pos_x2;
+            }
+            break;
+          case KEY_SCAN_CODE_ESC:
+            goto exit;
+        }
+      }
+
+      // ball move
+      sp_ball->pos_x += sp_ball->pos_x2;
+      sp_ball->pos_y += sp_ball->pos_y2;
+
+      // collision check (ball and wall)
+      if (sp_ball->pos_x < scr.panel_game_x) {
+        sp_ball->pos_x2 = 1 + rand() % 4;
+        sp_ball->pos_x += 2 * ( 0 - sp_ball->pos_x );
+      }
+      if (sp_ball->pos_x + 16 > scr.panel_game_x + scr.panel_game_width) {
+        sp_ball->pos_x2 = -(1 + rand() % 4);
+        sp_ball->pos_x -= 2 * (sp_ball->pos_x + 16 - scr.panel_game_x - scr.panel_game_width);
+      }
+
+      // collision check (ball and bar)
+      if (sp_ball->pos_x+8 >= sp_bar->pos_x && sp_ball->pos_x+8 <= sp_bar->pos_x + 64 &&
+          sp_ball->pos_y+10 >= sp_bar->pos_y && sp_ball->pos_y+10 <= sp_bar->pos_y+12) {
+            sp_ball->pos_y2 = -(1 + rand() % 4);
+            sp_ball->pos_y -= 2*(sp_ball->pos_y+10 - sp_bar->pos_y);
+      }
+      if (sp_ball->pos_y < sp_blocks[40].pos_y+8) {
+        sp_ball->pos_y2 = (1 + rand() % 4);
+        sp_ball->pos_y += 2*(sp_blocks[40].pos_y+8 - sp_ball->pos_y);
+      }
+
+      // ball out check
+      if (sp_ball->pos_y >= scr.panel_game_y + scr.panel_game_height) {
+        rc = 1;
+        break;
+      }
+
+      WAIT_VSYNC;
+      WAIT_VBLANK;
+
+      sp_scroll(sp_bar);
+      sp_scroll(sp_ball);
+
     }
+    
+    if (rc == 0) game.round++;
 
-    if (sp_ball->pos_y >= scr.panel_game_y + scr.panel_game_height) {
-      rc = 1;
-      break;
-    }
-
-    WAIT_VSYNC;
-    WAIT_VBLANK;
-
-    sp_scroll(sp_bar);
-    sp_scroll(sp_ball);
-
-    if (B_KEYSNS() != 0) {
-      int scan_code = B_KEYINP() >> 8;
-      if (scan_code == KEY_SCAN_CODE_ESC) goto exit;
-    }
-
-  }
+  } while (rc == 0);
 
   // game over
   if (rc != 0) {
 
     // game over
     game_over(&game);
+
+    // true end
+    game_ending(&game);
 
   } else {
 

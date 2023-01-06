@@ -3,7 +3,10 @@
 
 #include "screen.h"
 #include "crtc.h"
+
+#ifdef USE_PNG
 #include "ext/png.h"
+#endif
 
 // clear and initialize screen and sprites
 void screen_init(SCREEN_HANDLE* scr) {
@@ -135,6 +138,21 @@ void screen_scroll(SCREEN_HANDLE* scr, int x, int y) {
   SCROLL(3, x % scr->total_width, y % scr->total_height);
 }
 
+// put image dump dat to gvram
+void screen_put_image(SCREEN_HANDLE* scr, int x, int y, int width, int height, unsigned short* image_data) {
+
+  unsigned short* p = image_data;
+
+  for (int i = 0; i < height; i++) {
+    volatile unsigned short* gvram = GVRAM + ( y + i ) * 512 + x;
+    for (int j = 0; j < width; j++) {
+      gvram[ j ] = *p++;
+    }
+  }
+}
+
+#ifdef USE_PNG
+
 // load png image
 void screen_load_png(SCREEN_HANDLE* scr, int x, int y, int brightness, const char* png_file_name) {
 
@@ -151,3 +169,5 @@ void screen_load_png(SCREEN_HANDLE* scr, int x, int y, int brightness, const cha
   png_load(&png, png_file_name);
   png_close(&png);
 }
+
+#endif
