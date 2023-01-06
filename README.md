@@ -25,7 +25,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 ## 開発環境
 
-* クロスコンパイル環境
+* クロスコンパイル
   * MacBoor Air (Apple Silicon, 2020)
   * [xdev68k](https://guthub.com/yosshin4004/xdev68/) (gcc 12.2.0)
   * XC 2.1 ライブラリ
