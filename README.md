@@ -19,6 +19,8 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 ## 遊び方
 
+ジョイスティックもしくはキーボードでパドルを左右に動かしてボールを落ちないように打ち返します。
+
 ---
 
 ## 開発環境
@@ -37,5 +39,8 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * データコンバート [png2sp](https://github.com/tantanGH/png2sp/)
 
 * サウンドデータ作成
+
+* 動作確認
+  * [XEiJ](https://stdkmd.net/xeij/)
 
 ソースコードのコンパイルには xdev68k 環境が必須です。X680x0/Human68k 上の gcc/gcc2 コンパイラではコンパイルできません。
