@@ -7,19 +7,10 @@
 
 #include "crtc.h"
 #include "screen.h"
+#include "keyboard.h"
 #include "sprite.h"
 #include "data_sprite.h"
 #include "data_logo.h"
-
-#define KEY_SCAN_CODE_CR     (3*8 + 5)
-#define KEY_SCAN_CODE_ENTER  (9*8 + 6)
-#define KEY_SCAN_CODE_SPACE  (6*8 + 5)
-#define KEY_SCAN_CODE_ESC    (0*8 + 1)
-#define KEY_SCAN_CODE_LEFT   (7*8 + 3)
-#define KEY_SCAN_CODE_RIGHT  (7*8 + 5)
-
-#define JOY_LEFT  (4)
-#define JOY_RIGHT (8)
 
 // sprite pattern set
 typedef struct {

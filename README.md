@@ -26,9 +26,10 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 ## 開発環境
 
 * クロスコンパイル
-  * MacBoor Air (Apple Silicon, 2020)
-  * [xdev68k](https://guthub.com/yosshin4004/xdev68/) (gcc 12.2.0)
+  * [xdev68k](https://guthub.com/yosshin4004/xdev68/) ([gcc 12.2.0に変更](https://github.com/tantanGH/distribution/blob/main/INSTALL_xdev68k_M1Mac.md))
   * XC 2.1 ライブラリ
+  * Microsoft Visual Code Studio
+  * MacBoor Air (2020, Apple Silicon, RAM8GB, SSD512GB)
 
 * スプライトデータ作成
   * 透過PNG作成 Microsoft PowerPoint
@@ -44,3 +45,13 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * [XEiJ](https://stdkmd.net/xeij/)
 
 ソースコードのコンパイルには xdev68k 環境が必須です。X680x0/Human68k 上の gcc/gcc2 コンパイラではコンパイルできません。
+
+---
+
+## 動作デモ
+
+![](images/13.gif)
+
+![](images/11.gif)
+
+![](images/15.gif)
