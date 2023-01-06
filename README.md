@@ -24,16 +24,17 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 ## 開発環境
 
 * クロスコンパイル環境
- - MacBoor Air (Apple Silicon, 2020)
- - [xdev68k](https://guthub.com/yosshin4004/xdev68/) (gcc 12.2.0)
- - XC 2.1 ライブラリ
+  * MacBoor Air (Apple Silicon, 2020)
+  * [xdev68k](https://guthub.com/yosshin4004/xdev68/) (gcc 12.2.0)
+  * XC 2.1 ライブラリ
 
 * スプライトデータ作成
- - 透過PNG作成 Microsoft PowerPoint
- - データコンバート [png2sp](https://github.com/tantanGH/png2sp/)
+  * 透過PNG作成 Microsoft PowerPoint
+  * データコンバート [png2sp](https://github.com/tantanGH/png2sp/)
 
 * タイトルロゴデータ作成
- - [Cool Text](https://ja.cooltext.com/)
+  * [Cool Text](https://ja.cooltext.com/)
+  * データコンバート [png2sp](https://github.com/tantanGH/png2sp/)
 
 * サウンドデータ作成
 
