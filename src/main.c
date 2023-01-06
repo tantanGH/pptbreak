@@ -516,12 +516,12 @@ int main(int argc, char* argv[]) {
 #ifdef USE_JOYSTICK
       // joy stick check
       int joy = JOYGET(0);
-      if ((joy & JOY_LEFT) == 0) {
+      if ((joy & JOY_SNS_LEFT) == 0) {
         if (sp_bar->pos_x > scr.panel_game_x) {
           sp_bar->pos_x -= sp_bar->pos_x2;
         }
       }
-      if ((joy & JOY_RIGHT) == 0) {
+      if ((joy & JOY_SNS_RIGHT) == 0) {
         if (sp_bar->pos_x + 16 * sp_bar->spp->size_x < scr.panel_game_x + scr.panel_game_width) {
           sp_bar->pos_x += sp_bar->pos_x2;
         }

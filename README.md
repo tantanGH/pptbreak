@@ -50,8 +50,8 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 ## 動作デモ
 
-![](images/13.gif)
+![](images/15.gif)
 
 ![](images/11.gif)
 
-![](images/15.gif)
+![](images/13.gif)
