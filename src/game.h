@@ -44,11 +44,12 @@ typedef struct {
   ADPCM_SET* adpcm_set;
 } GAME_HANDLE;
 
-int game_opening(GAME_HANDLE* game);
-void game_round_start(GAME_HANDLE* game);
-int game_ending(GAME_HANDLE* game);
-int game_over(GAME_HANDLE* game);
 void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set);
 void game_close(GAME_HANDLE* game);
+int game_opening_event(GAME_HANDLE* game);
+int game_ending_event(GAME_HANDLE* game);
+int game_over_event(GAME_HANDLE* game);
+void game_round_start_event(GAME_HANDLE* game);
+int game_round_loop(GAME_HANDLE* game);
 
 #endif

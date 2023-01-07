@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "game.h"
@@ -7,6 +8,8 @@
 #include "keyboard.h"
 #include "crtc.h"
 #include "data_logo.h"
+
+#define USE_JOYSTICK
 
 // time wait
 static void wait_time(int sec) {
@@ -39,8 +42,23 @@ static int wait_key(int timeout) {
   return scan_code;
 }
 
+// game open
+void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set) {
+  game->high_score = 76500;
+  game->score = 0;
+  game->round = 1;
+  game->scr = scr;
+  game->sp_set = sp_set;
+  game->adpcm_set = adpcm_set;
+}
+
+// game close
+void game_close(GAME_HANDLE* game) {
+  
+}
+
 // opening
-int game_opening(GAME_HANDLE* game) {
+int game_opening_event(GAME_HANDLE* game) {
 
   int scan_code = 0;
 
@@ -102,47 +120,8 @@ int game_opening(GAME_HANDLE* game) {
   return scan_code;
 }
 
-// round start
-void game_round_start(GAME_HANDLE* game) {
-
-  // screen handle
-  SCREEN_HANDLE* scr = game->scr;
-
-  // wait vsync
-  WAIT_VSYNC;
-  WAIT_VBLANK;
-
-  // clear game panel
-  screen_clear_panel_text(scr, 0);
-  screen_fill_panel(scr, 0, 1 + game->round % 4);
-  screen_scroll(scr, 0, 0);
-
-  // show round number
-  static char round[]      = "          ";
-  sprintf(round, "ROUND %d", game->round);
-  screen_put_text(scr, scr->panel_score_x + 8, 200, 1, round);
-
-  SPRITE* sp_bar = &(game->sp_set->sp_bar);
-  SPRITE* sp_ball = &(game->sp_set->sp_ball);
-  SPRITE* sp_blocks = &(game->sp_set->sp_blocks[0]);
-
-  // show bar and blocks
-  sp_scroll(sp_bar);
-  for (int i = 0; i < 48; i++) {
-    sp_scroll(&sp_blocks[i]);
-  }
-
-  // message
-  screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "READY");
-  wait_time(3);
-  screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "     ");
-
-  // show ball
-  sp_scroll(sp_ball);
-}
-
 // ending
-int game_ending(GAME_HANDLE* game) {
+int game_ending_event(GAME_HANDLE* game) {
 
   SCREEN_HANDLE* scr = game->scr;
   SPRITE* sp_stars = &(game->sp_set->sp_stars[0]);
@@ -217,7 +196,7 @@ int game_ending(GAME_HANDLE* game) {
 }
 
 // game over
-int game_over(GAME_HANDLE* game) {
+int game_over_event(GAME_HANDLE* game) {
   
   SCREEN_HANDLE* scr = game->scr;
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "GAME OVER");
@@ -242,17 +221,145 @@ int game_over(GAME_HANDLE* game) {
   return scan_code;
 }
 
-// game open
-void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set) {
-  game->high_score = 76500;
-  game->score = 0;
-  game->round = 1;
-  game->scr = scr;
-  game->sp_set = sp_set;
-  game->adpcm_set = adpcm_set;
+// round start
+void game_round_start_event(GAME_HANDLE* game) {
+
+  // screen handle
+  SCREEN_HANDLE* scr = game->scr;
+
+  // wait vsync
+  WAIT_VSYNC;
+  WAIT_VBLANK;
+
+  // clear game panel
+  screen_clear_panel_text(scr, 0);
+  screen_fill_panel(scr, 0, 1 + game->round % 4);
+  screen_scroll(scr, 0, 0);
+
+  // show round number
+  static char round[]      = "          ";
+  sprintf(round, "ROUND %d", game->round);
+  screen_put_text(scr, scr->panel_score_x + 8, 200, 1, round);
+
+  SPRITE* sp_bar = &(game->sp_set->sp_bar);
+  SPRITE* sp_ball = &(game->sp_set->sp_ball);
+  SPRITE* sp_blocks = &(game->sp_set->sp_blocks[0]);
+
+  // show bar and blocks
+  sp_scroll(sp_bar);
+  for (int i = 0; i < 48; i++) {
+    sp_scroll(&sp_blocks[i]);
+  }
+
+  // message
+  screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "READY");
+  wait_time(3);
+  screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "     ");
+
+  // show ball
+  sp_scroll(sp_ball);
 }
 
-// game close
-void game_close(GAME_HANDLE* game) {
-  
+// game round loop
+int game_round_loop(GAME_HANDLE* game) {
+
+  // return code
+  int rc = 0;
+
+  // screen handle
+  SCREEN_HANDLE* scr = game->scr;
+
+  // sprite pointers
+  SPRITE* sp_bar = &(game->sp_set->sp_bar);
+  SPRITE* sp_ball = &(game->sp_set->sp_ball);
+  SPRITE* sp_blocks = &(game->sp_set->sp_blocks[0]);
+
+  // adpcm set
+  ADPCM_SET* adpcm_set = game->adpcm_set;
+
+  // round loop
+  for (;;) {
+
+#ifdef USE_JOYSTICK
+    // joy stick check
+    int joy = JOYGET(0);
+    if ((joy & JOY_SNS_LEFT) == 0) {
+      if (sp_bar->pos_x > scr->panel_game_x) {
+        sp_bar->pos_x -= sp_bar->pos_x2;
+      }
+    }
+    if ((joy & JOY_SNS_RIGHT) == 0) {
+      if ((sp_bar->pos_x + 16 * sp_bar->spp->size_x - 1) < scr->panel_game_x + scr->panel_game_width) {
+        sp_bar->pos_x += sp_bar->pos_x2;
+      }
+    }
+#endif
+
+    // keyboard check
+    if (B_KEYSNS() != 0) {
+      int scan_code = B_KEYINP() >> 8;
+      switch (scan_code) {
+        case KEY_SCAN_CODE_LEFT:
+          if (sp_bar->pos_x > scr->panel_game_x) {
+            sp_bar->pos_x -= sp_bar->pos_x2;
+          }
+          break;
+        case KEY_SCAN_CODE_RIGHT:
+          if ((sp_bar->pos_x + 16 * sp_bar->spp->size_x - 1) < scr->panel_game_x + scr->panel_game_width) {
+            sp_bar->pos_x += sp_bar->pos_x2;
+          }
+          break;
+        case KEY_SCAN_CODE_ESC:
+          goto exit;
+      }
+    }
+
+    // ball move
+    sp_ball->pos_x += sp_ball->pos_x2;
+    sp_ball->pos_y += sp_ball->pos_y2;
+
+    // collision check (ball and wall)
+    if ((sp_ball->pos_x + 5) < scr->panel_game_x) {
+      sp_ball->pos_x2 = 1 + rand() % 4;
+      sp_ball->pos_x += 2 * ( scr->panel_game_x - sp_ball->pos_x - 5 );
+      adpcm_play(&adpcm_set->adpcm_block2);
+    }
+    if ((sp_ball->pos_x + 11) > scr->panel_game_x + scr->panel_game_width) {
+      sp_ball->pos_x2 = -(1 + rand() % 4);
+      sp_ball->pos_x -= 2 * ( sp_ball->pos_x + 11 - scr->panel_game_x - scr->panel_game_width );
+      adpcm_play(&adpcm_set->adpcm_block2);
+    }
+
+    // collision check (ball and bar)
+    if (sp_ball->pos_x + 11 >= sp_bar->pos_x && sp_ball->pos_x + 11 <= sp_bar->pos_x + 64 &&
+        sp_ball->pos_y + 11 >= sp_bar->pos_y && sp_ball->pos_y + 11 <= sp_bar->pos_y + 12 ) {
+          sp_ball->pos_y2 = -(1 + rand() % 4);
+          sp_ball->pos_y -= 2*(sp_ball->pos_y + 11 - sp_bar->pos_y);
+          adpcm_play(&adpcm_set->adpcm_bar);
+    }
+
+    // collision check (ball and block)
+    if (sp_ball->pos_y < sp_blocks[40].pos_y+8) {
+      sp_ball->pos_y2 = (1 + rand() % 4);
+      sp_ball->pos_y += 2*(sp_blocks[40].pos_y+8 - sp_ball->pos_y);
+      adpcm_play(&adpcm_set->adpcm_block1);
+    }
+
+    // ball out check
+    if (sp_ball->pos_y >= scr->panel_game_y + scr->panel_game_height) {
+      adpcm_play(&adpcm_set->adpcm_over);
+      rc = 1;   // game over
+      break;
+    }
+
+    WAIT_VSYNC;
+    WAIT_VBLANK;
+
+    sp_scroll(sp_bar);
+    sp_scroll(sp_ball);
+
+  }
+
+exit:
+  return rc;    
 }

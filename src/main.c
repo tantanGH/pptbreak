@@ -14,8 +14,6 @@
 #include "data_adpcm.h"
 #include "game.h"
 
-#define USE_JOYSTICK
-
 // setup screen
 void setup_screen(SCREEN_HANDLE* scr) {
 
@@ -165,10 +163,13 @@ void setup_sprites(SCREEN_HANDLE* scr, SPRITE_SET* sp_set, SPRITE_PATTERN_SET* s
     sp_block->priority = 3;
     if (i < 16) {
       sp_block->spp = &spp_set->spp_block1;
+      sp_block->pos_z = 3;  // life
     } else if (i < 32) {
       sp_block->spp = &spp_set->spp_block2;
+      sp_block->pos_z = 2;  // life
     } else {
       sp_block->spp = &spp_set->spp_block3;
+      sp_block->pos_z = 1;  // life
     }
   }
 
@@ -198,7 +199,7 @@ void setup_sprites(SCREEN_HANDLE* scr, SPRITE_SET* sp_set, SPRITE_PATTERN_SET* s
 
 }
 
-// adpcm setup
+// setup adpcm sound
 static void setup_adpcm(ADPCM_SET* as) {
   
   as->adpcm_bar.data = adpcm_data2;
@@ -252,122 +253,35 @@ int main(int argc, char* argv[]) {
   game_open(&game, &scr, &sp_set, &adpcm_set);
 
   // game opening
-  int scan_code = game_opening(&game);
+  int scan_code = game_opening_event(&game);
   if (scan_code == KEY_SCAN_CODE_ESC) goto exit;
 
   // round loop
   int rc = 0;
   do {
 
-    // sprite pointers
-    SPRITE* sp_bar = &(sp_set.sp_bar);
-    SPRITE* sp_ball = &(sp_set.sp_ball);
-    SPRITE* sp_blocks = &(sp_set.sp_blocks[0]);
-
     // round start
-    game_round_start(&game);
+    game_round_start_event(&game);
 
-    // game loop
-    for (;;) {
-
-#ifdef USE_JOYSTICK
-      // joy stick check
-      int joy = JOYGET(0);
-      if ((joy & JOY_SNS_LEFT) == 0) {
-        if (sp_bar->pos_x > scr.panel_game_x) {
-          sp_bar->pos_x -= sp_bar->pos_x2;
-        }
-      }
-      if ((joy & JOY_SNS_RIGHT) == 0) {
-        if (sp_bar->pos_x + 16 * sp_bar->spp->size_x < scr.panel_game_x + scr.panel_game_width) {
-          sp_bar->pos_x += sp_bar->pos_x2;
-        }
-      }
-#endif
-
-      // keyboard check
-      if (B_KEYSNS() != 0) {
-        int scan_code = B_KEYINP() >> 8;
-        switch (scan_code) {
-          case KEY_SCAN_CODE_LEFT:
-            if (sp_bar->pos_x > scr.panel_game_x) {
-              sp_bar->pos_x -= sp_bar->pos_x2;
-            }
-            break;
-          case KEY_SCAN_CODE_RIGHT:
-            if (sp_bar->pos_x + 16 * sp_bar->spp->size_x < scr.panel_game_x + scr.panel_game_width) {
-              sp_bar->pos_x += sp_bar->pos_x2;
-            }
-            break;
-          case KEY_SCAN_CODE_ESC:
-            goto exit;
-        }
-      }
-
-      // ball move
-      sp_ball->pos_x += sp_ball->pos_x2;
-      sp_ball->pos_y += sp_ball->pos_y2;
-
-      // collision check (ball and wall)
-      if (sp_ball->pos_x < scr.panel_game_x) {
-        sp_ball->pos_x2 = 1 + rand() % 4;
-        sp_ball->pos_x += 2 * ( 0 - sp_ball->pos_x );
-        adpcm_play(&adpcm_set.adpcm_block2);
-      }
-      if (sp_ball->pos_x + 16 > scr.panel_game_x + scr.panel_game_width) {
-        sp_ball->pos_x2 = -(1 + rand() % 4);
-        sp_ball->pos_x -= 2 * (sp_ball->pos_x + 16 - scr.panel_game_x - scr.panel_game_width);
-        adpcm_play(&adpcm_set.adpcm_block2);
-      }
-
-      // collision check (ball and bar)
-      if (sp_ball->pos_x+8 >= sp_bar->pos_x && sp_ball->pos_x+8 <= sp_bar->pos_x + 64 &&
-          sp_ball->pos_y+10 >= sp_bar->pos_y && sp_ball->pos_y+10 <= sp_bar->pos_y+12) {
-            sp_ball->pos_y2 = -(1 + rand() % 4);
-            sp_ball->pos_y -= 2*(sp_ball->pos_y+10 - sp_bar->pos_y);
-            adpcm_play(&adpcm_set.adpcm_bar);
-      }
-      if (sp_ball->pos_y < sp_blocks[40].pos_y+8) {
-        sp_ball->pos_y2 = (1 + rand() % 4);
-        sp_ball->pos_y += 2*(sp_blocks[40].pos_y+8 - sp_ball->pos_y);
-        adpcm_play(&adpcm_set.adpcm_block1);
-      }
-
-      // ball out check
-      if (sp_ball->pos_y >= scr.panel_game_y + scr.panel_game_height) {
-        adpcm_play(&adpcm_set.adpcm_over);
-        rc = 1;
-        break;
-      }
-
-      WAIT_VSYNC;
-      WAIT_VBLANK;
-
-      sp_scroll(sp_bar);
-      sp_scroll(sp_ball);
-
+    // round loop
+    rc = game_round_loop(&game);
+    if (rc == 0) {
+      game.round++;
+      if (game.round > 4) break;
     }
-    
-    if (rc == 0) game.round++;
 
   } while (rc == 0);
 
   // game over
   if (rc != 0) {
-
     // game over
-    game_over(&game);
-
-    // true end
-    game_ending(&game);
+    game_over_event(&game);
 
   } else {
-
     // true end
-    game_ending(&game);
+    game_ending_event(&game);
 
   }
-
 
 exit:
   // game close

@@ -27,8 +27,9 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 * クロスコンパイル
   * [xdev68k](https://github.com/yosshin4004/xdev68k/) ([gcc 12.2.0に変更](https://github.com/tantanGH/distribution/blob/main/INSTALL_xdev68k_M1Mac.md))
+  * HAS060.X & LK.X on run68mac
   * XC 2.1 ライブラリ
-  * Microsoft Visual Code Studio
+  * Microsoft Visual Studio Code
   * MacBoor Air (2020, Apple Silicon, RAM8GB, SSD512GB)
 
 * スプライトデータ作成
@@ -43,7 +44,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * [peko-step 効果音メーカー](https://www.peko-step.com/tool/soundeffect/)
   * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
 
-* サウンドデータ(MUSIC)無料素材利用
+* サウンドデータ(MUSIC)フリー素材
   * [DOVA-SYNDROME](https://dova-s.jp/)
   * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
 
@@ -51,6 +52,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * [XEiJ](https://stdkmd.net/xeij/)
 
 ソースコードのコンパイルには xdev68k 環境が必須です。X680x0/Human68k 上の gcc/gcc2 コンパイラではコンパイルできません。
+HLK301.X は run68上で Out of memory が多発するので純正の LK.X を使っています。
 
 ---
 
