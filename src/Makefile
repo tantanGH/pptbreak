@@ -19,7 +19,13 @@ HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/LK.X #hlk301.x だと out of memory になってしまう
 
 # 実行ファイル名
-TARGET_FILE = pptbreak.x
+TARGET_FILE = PPTBREAK.X
+
+# Document file
+DOCUMENT_FILE = PPTBREAK.DOC
+
+# Distribution package 
+PACKAGE_FILE = ../PPTBK010.ZIP
 
 # ヘッダ検索パス
 INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
@@ -52,12 +58,6 @@ OBJS =	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
 
 # HLK に入力するリンクリスト
 HLK_LINK_LIST = $(INTERMEDIATE_DIR)/_lk_list.tmp
-
-# Distribution package 
-PACKAGE_FILE = ../PPTBK010.ZIP
-
-# Document file
-DOCUMENT_FILE = PPTBREAK.DOC
 
 # デフォルトのターゲット
 all : ${INTERMEDIATE_DIR}/$(TARGET_FILE)

@@ -1,8 +1,12 @@
 #ifndef __H_ADPCM__
 #define __H_ADPCM__
 
+#define ADPCM_MODE_15KHZ_L  (4 * 256 + 1)
+#define ADPCM_MODE_15KHZ_R  (4 * 256 + 2)
+#define ADPCM_MODE_15KHZ_LR (4 * 256 + 3)
+
 typedef struct {
-  int mode;         // 4 * 256 + 3 = 15.6kHz L+R
+  int mode;
   int length;
   unsigned char* data;
 } ADPCM_SOUND;

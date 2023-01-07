@@ -469,17 +469,15 @@ int game_round_loop(GAME_HANDLE* game) {
     sp_ball->pos_y += sp_ball->pos_y2;
     sp_ball->invalidate = 1;
 
-    // block move
-    if (game->round >= 3) {
-      // move yellow block
+    // yellow block move (round 4 only)
+    if (game->round >= 4) {
       SPRITE* sp_blocks = &(game->sp_set->sp_blocks[8]);
-      // move silver block
       for (int i = 0; i < 8; i++) {
         if ((sp_blocks[8*1+i].pos_z | sp_blocks[8*2+i].pos_z | sp_blocks[8*3+i].pos_z) == 0) {
           // if all the below blocks are broken
           sp_blocks[i].pos_y += sp_blocks[i].pos_y2;
           sp_blocks[i].invalidate = 1;
-          if (sp_blocks[i].pos_y2 > 0 && sp_blocks[i].pos_y >= scr->panel_game_y + scr->panel_game_width * 3 / 5) {
+          if (sp_blocks[i].pos_y2 > 0 && sp_blocks[i].pos_y >= scr->panel_game_y + scr->panel_game_width * 1 / 2) {
             sp_blocks[i].pos_y2 *= -1;
           } else if (sp_blocks[i].pos_y2 < 0 && sp_blocks[i].pos_y <= scr->panel_game_y + 20) {
             sp_blocks[i].pos_y2 *= -1;
@@ -487,9 +485,10 @@ int game_round_loop(GAME_HANDLE* game) {
         }
       }
     }
-    if (game->round >= 2) {
+
+    // silver block move (round 3,4 only)
+    if (game->round >= 3) {
       SPRITE* sp_blocks = &(game->sp_set->sp_blocks[0]);
-      // move silver block
       for (int i = 0; i < 8; i++) {
         if ((sp_blocks[8*1+i].pos_z | sp_blocks[8*2+i].pos_z | sp_blocks[8*3+i].pos_z | sp_blocks[8*4+i].pos_z) == 0) {
           // if all the below blocks are broken
@@ -505,30 +504,30 @@ int game_round_loop(GAME_HANDLE* game) {
     }
 
     // collision check (ball and wall)
-    if ((sp_ball->pos_x +5) < scr->panel_game_x) {
+    if ((sp_ball->pos_x +5) < scr->panel_game_x) {    // left wall
       sp_ball->pos_x2 = 1 + rand() % 4;
       sp_ball->pos_x += 2 * ( scr->panel_game_x - sp_ball->pos_x -5 );
       sp_ball->invalidate = 1;
-      adpcm_play(&adpcm_set->adpcm_block2);
+      adpcm_play(&adpcm_set->adpcm_wall1);
     }
-    if ((sp_ball->pos_x + 11) > scr->panel_game_x + scr->panel_game_width) {
+    if ((sp_ball->pos_x + 11) > scr->panel_game_x + scr->panel_game_width) {    // right wall
       sp_ball->pos_x2 = -(1 + rand() % 4);
       sp_ball->pos_x -= 2 * ( sp_ball->pos_x +11 - scr->panel_game_x - scr->panel_game_width );
       sp_ball->invalidate = 1;
-      adpcm_play(&adpcm_set->adpcm_block2);
+      adpcm_play(&adpcm_set->adpcm_wall2);
     }
-    if ((sp_ball->pos_y +3) < scr->panel_game_y) {
+    if ((sp_ball->pos_y +3) < scr->panel_game_y) {    // top wall
       sp_ball->pos_y2 = 1 + rand() % 4;
       sp_ball->pos_y += 2 * ( scr->panel_game_y - sp_ball->pos_y -3 );
       sp_ball->invalidate = 1;
-      adpcm_play(&adpcm_set->adpcm_block2);
+      adpcm_play(&adpcm_set->adpcm_wall3);
     }
 
     // collision check (ball and bar)
     if (sp_ball->pos_x +11 >= sp_bar->pos_x && sp_ball->pos_x +5 <= sp_bar->pos_x +63 &&
-        sp_ball->pos_y +10 >= sp_bar->pos_y && sp_ball->pos_y +10 <= sp_bar->pos_y +15 ) {
+        sp_ball->pos_y +10 >= sp_bar->pos_y && sp_ball->pos_y +10 <= sp_bar->pos_y +14 ) {
           sp_ball->pos_y2 = -(1 + rand() % 4);
-          sp_ball->pos_y -= 2*(sp_ball->pos_y +10 - sp_bar->pos_y);
+          sp_ball->pos_y -= 2*(sp_ball->pos_y +10 - sp_bar->pos_y);   // adjust overflown position
           sp_ball->invalidate = 1;
           adpcm_play(&adpcm_set->adpcm_bar);
     }
@@ -538,54 +537,59 @@ int game_round_loop(GAME_HANDLE* game) {
 
       SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
 
-      if (sp_block->pos_z <= 0) continue;                 // already broken ?
+      // if this block is already broken, skip
+      if (sp_block->pos_z <= 0) continue;
 
+      int hit = 0;
       if (sp_ball->pos_x +11 >= sp_block->pos_x && sp_ball->pos_x +5 <= sp_block->pos_x +31 &&
           ((sp_ball->pos_y2 < 0 && sp_ball->pos_y +5 < sp_block->pos_y +14 && sp_ball->pos_y +5 > sp_block->pos_y +4) ||
            (sp_ball->pos_y2 > 0 && sp_ball->pos_y +11 > sp_block->pos_y && sp_ball->pos_y +11 < sp_block->pos_y +12))) {
 
-        // bottom or top hit
         if (sp_ball->pos_y2 < 0) {
+          // bottom hit
           sp_ball->pos_y2 = 1 + rand() % 4;
           sp_ball->pos_y += 2*(sp_block->pos_y +12 - sp_ball->pos_y -5);
         } else {
+          // top hit
           sp_ball->pos_y2 = -(1 + rand() % 4);
           sp_ball->pos_y -= 2*(sp_block->pos_y - sp_ball->pos_y -11);
         }
 
-        sp_block->pos_z--;
-        if (sp_block->pos_z <= 0) {
-          game->score += sp_block->pos_z2;
-          game->score_invalidate = 1;
-          sp_block->priority = 0;
-          remained_blocks--;
-        }
-        sp_block->invalidate = 1;
-        adpcm_play(&adpcm_set->adpcm_block1);
+        hit = 1;
 
       } else if (sp_ball->pos_y +5 >= sp_block->pos_y +15 && sp_ball->pos_y +11 <= sp_block->pos_y &&
                  ((sp_ball->pos_x2 < 0 && sp_ball->pos_x +5 < sp_block->pos_x +31 && sp_ball->pos_x +5 > sp_block->pos_x +15) ||
                   (sp_ball->pos_x2 > 0 && sp_ball->pos_x +11 > sp_block->pos_x && sp_ball->pos_x +11 < sp_block->pos_x +16))) {
 
-        // left or right hit
         if (sp_ball->pos_x2 < 0) {
+          // right hit
           sp_ball->pos_x2 = 1 + rand() % 4;
           sp_ball->pos_x += 2*(sp_block->pos_x +31 - sp_ball->pos_x -5);
         } else {
+          // left hit
           sp_ball->pos_x2 = -(1 + rand() % 4);
           sp_ball->pos_x -= 2*(sp_block->pos_x - sp_ball->pos_x -11);
         }
 
+        hit = 1;
+
+      }
+
+      // get more score at lower block position
+      if (hit) {
         sp_block->pos_z--;
         if (sp_block->pos_z <= 0) {
-          game->score += sp_block->pos_z2;
+          game->score += sp_block->pos_z2 * ((sp_block->pos_y > scr->panel_game_y + scr->panel_game_height/2) ? 2 : 1);
           game->score_invalidate = 1;
           sp_block->priority = 0;
           remained_blocks--;
         }
         sp_block->invalidate = 1;
-        adpcm_play(&adpcm_set->adpcm_block1);
-
+        if (i < 8) {
+          adpcm_play(&adpcm_set->adpcm_block2);
+        } else {
+          adpcm_play(&adpcm_set->adpcm_block1);
+        }
       }
 
     }

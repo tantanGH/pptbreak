@@ -33,6 +33,9 @@ typedef struct {
   ADPCM_SOUND adpcm_bar;
   ADPCM_SOUND adpcm_block1;
   ADPCM_SOUND adpcm_block2;
+  ADPCM_SOUND adpcm_wall1;
+  ADPCM_SOUND adpcm_wall2;
+  ADPCM_SOUND adpcm_wall3;
   ADPCM_SOUND adpcm_over;
   ADPCM_SOUND adpcm_ending_music;
 } ADPCM_SET;

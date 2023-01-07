@@ -6,21 +6,23 @@ A breakout clone powered by PPTX for X680x0
 
 ## About This
 
-ブロック崩しもどきのゲームです。X680x0 のプログラムを約30年ぶりにC言語で書いてみる練習として作ったものです。
+ブロック崩しもどきのゲームです。ゲーム制作素人が X680x0 のプログラムを約30年ぶりにC言語で書いてみる練習として作ったものです。
 なお実機を所有していないので、エミュレータ上でしか確認していません。
+
+動作報告・不具合報告歓迎
 
 ---
 
 ## 起動方法
 
-PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行します。
+PPTBKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行します。
 
 ---
 
 ## 遊び方
 
 ジョイスティックもしくはキーボードでパドルを左右に動かしてボールを落ちないように打ち返します。
-ラウンド2以降は一部のブロックが動く場合があります。ラウンド4が最終ステージです。
+ラウンド3以降は一部のブロックが動く場合があります。ラウンド4が最終ステージです。
 
 ---
 
@@ -28,7 +30,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 * クロスコンパイル
   * [xdev68k](https://github.com/yosshin4004/xdev68k/) ([gcc 12.2.0に変更](https://github.com/tantanGH/distribution/blob/main/INSTALL_xdev68k_M1Mac.md)) Thanks to ファミべのよっしんさん
-  * HAS060.X & LK.X on run68mac Thanks to Yunkさん / M.Kamadaさん / GOROmanさん
+  * HAS060.X & LK.X on run68mac Thanks to yunkさん / M.Kamadaさん / GOROmanさん
   * SHARP XC 2.1 ライブラリ
   * Microsoft Visual Studio Code
   * Apple MacBoor Air (2020, Apple Silicon, RAM8GB, SSD512GB)

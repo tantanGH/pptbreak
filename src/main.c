@@ -16,6 +16,8 @@
 #include "data_logo.h"
 #include "game.h"
 
+#define VERSION "0.1.0"
+
 // setup screen
 void setup_screen(SCREEN_HANDLE* scr) {
 
@@ -212,27 +214,45 @@ static void setup_adpcm(ADPCM_SET* as) {
   
   as->adpcm_bar.data = adpcm_data2;
   as->adpcm_bar.length = ADPCM_DATA2_LENGTH;
-  as->adpcm_bar.mode = 4 * 256 + 2;
+  as->adpcm_bar.mode = ADPCM_MODE_15KHZ_LR;
   
+  as->adpcm_block1.data = adpcm_data5;
+  as->adpcm_block1.length = ADPCM_DATA5_LENGTH;
+  as->adpcm_block1.mode = ADPCM_MODE_15KHZ_LR;
+  
+  as->adpcm_block2.data = adpcm_data3;
+  as->adpcm_block2.length = ADPCM_DATA3_LENGTH;
+  as->adpcm_block2.mode = ADPCM_MODE_15KHZ_LR;
+
+  as->adpcm_wall1.data = adpcm_data4;
+  as->adpcm_wall1.length = ADPCM_DATA4_LENGTH;
+  as->adpcm_wall1.mode = ADPCM_MODE_15KHZ_L;
+
+  as->adpcm_wall2.data = adpcm_data4;
+  as->adpcm_wall2.length = ADPCM_DATA4_LENGTH;
+  as->adpcm_wall2.mode = ADPCM_MODE_15KHZ_R;
+
+  as->adpcm_wall3.data = adpcm_data4;
+  as->adpcm_wall3.length = ADPCM_DATA4_LENGTH;
+  as->adpcm_wall3.mode = ADPCM_MODE_15KHZ_LR;
+
   as->adpcm_over.data = adpcm_data1;
   as->adpcm_over.length = ADPCM_DATA1_LENGTH;
-  as->adpcm_over.mode = 4 * 256 + 3;
-  
-  as->adpcm_block1.data = adpcm_data3;
-  as->adpcm_block1.length = ADPCM_DATA3_LENGTH;
-  as->adpcm_block1.mode = 4 * 256 + 3;
-  
-  as->adpcm_block2.data = adpcm_data4;
-  as->adpcm_block2.length = ADPCM_DATA4_LENGTH;
-  as->adpcm_block2.mode = 4 * 256 + 3;
+  as->adpcm_over.mode = ADPCM_MODE_15KHZ_LR;
 
   as->adpcm_ending_music.data = adpcm_data_music1;
   as->adpcm_ending_music.length = ADPCM_DATA_MUSIC1_LENGTH;
-  as->adpcm_ending_music.mode = 4 * 256 + 3;
+  as->adpcm_ending_music.mode = ADPCM_MODE_15KHZ_LR;
 }
 
 // main
 int main(int argc, char* argv[]) {
+
+  // version check
+  if (argc >= 2 && strcmp(argv[1],"-h")) {
+    printf("pptbreak.x version " VERSION " 2023 by tantan");
+    return 1;
+  }
 
   // randomaize
   srand((unsigned int)time(NULL));
