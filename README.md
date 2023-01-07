@@ -40,6 +40,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * データコンバート [pngdeband](https://github.com/tantanGH/pngdeband/), [png2sp](https://github.com/tantanGH/png2sp/)
 
 * サウンドデータ作成
+  * [peko-step 効果音メーカー](https://www.peko-step.com/tool/soundeffect/)
   * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
 
 * 動作確認
