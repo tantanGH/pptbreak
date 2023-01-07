@@ -5,6 +5,9 @@
 #include "sprite.h"
 #include "adpcm.h"
 
+#define NUM_OF_BLOCKS (40)
+#define NUM_OF_STARS  (24)
+
 // sprite pattern set
 typedef struct {
   SPRITE_PATTERN spp_bar;
@@ -21,8 +24,8 @@ typedef struct {
 typedef struct {
   SPRITE sp_bar;
   SPRITE sp_ball;
-  SPRITE sp_blocks[ 48 ];
-  SPRITE sp_stars[ 24 ];
+  SPRITE sp_blocks[ NUM_OF_BLOCKS ];
+  SPRITE sp_stars[ NUM_OF_STARS ];
 } SPRITE_SET;
 
 // adpcm set
@@ -36,20 +39,23 @@ typedef struct {
 
 // game class
 typedef struct {
+  int round;
   int high_score;
   int score;
-  int round;
+  volatile int score_invalidate;
   SCREEN_HANDLE* scr;
   SPRITE_SET* sp_set;
   ADPCM_SET* adpcm_set;
+  unsigned short* logo_data;
 } GAME_HANDLE;
 
-void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set);
+void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set, unsigned short* logo_data);
 void game_close(GAME_HANDLE* game);
 int game_opening_event(GAME_HANDLE* game);
 int game_ending_event(GAME_HANDLE* game);
 int game_over_event(GAME_HANDLE* game);
 void game_round_start_event(GAME_HANDLE* game);
+void game_round_clear_event(GAME_HANDLE* game);
 int game_round_loop(GAME_HANDLE* game);
 
 #endif

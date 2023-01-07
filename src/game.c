@@ -7,9 +7,8 @@
 #include "sprite.h"
 #include "keyboard.h"
 #include "crtc.h"
-#include "data_logo.h"
 
-#define USE_JOYSTICK
+//#define USE_JOYSTICK
 
 // time wait
 static void wait_time(int sec) {
@@ -43,13 +42,14 @@ static int wait_key(int timeout) {
 }
 
 // game open
-void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set) {
+void game_open(GAME_HANDLE* game, SCREEN_HANDLE* scr, SPRITE_SET* sp_set, ADPCM_SET* adpcm_set, unsigned short* logo_data) {
   game->high_score = 76500;
   game->score = 0;
   game->round = 1;
   game->scr = scr;
   game->sp_set = sp_set;
   game->adpcm_set = adpcm_set;
+  game->logo_data = logo_data;
 }
 
 // game close
@@ -60,7 +60,7 @@ void game_close(GAME_HANDLE* game) {
 // opening
 int game_opening_event(GAME_HANDLE* game) {
 
-  int scan_code = 0;
+  int rc = 0;
 
   static char high_score[] = "          ";
   static char score[]      = "          ";
@@ -84,9 +84,9 @@ int game_opening_event(GAME_HANDLE* game) {
   screen_scroll(scr, 0, 256);
 
   //screen_load_png(scr, 7, 50, 100, "title2.png");
-  screen_put_image(scr, 7, 50, 269, 41, logo_data);
+  screen_put_image(scr, 7, 50, 269, 41, game->logo_data);
 
-  do {
+  for (;;) {
 
     screen_clear_panel_text(scr, 0);
 
@@ -100,7 +100,7 @@ int game_opening_event(GAME_HANDLE* game) {
       // scroll skip
       if (B_KEYSNS() != 0) {
         int sc = B_KEYINP() >> 8;
-        if (sc == KEY_SCAN_CODE_SPACE || sc == KEY_SCAN_CODE_CR || sc == KEY_SCAN_CODE_ESC) break;
+        if (sc == KEY_SCAN_CODE_SPACE || sc == KEY_SCAN_CODE_CR) break;
       }
 
     }
@@ -113,18 +113,47 @@ int game_opening_event(GAME_HANDLE* game) {
     screen_put_text_center(scr, 0, 210, scr->panel_game_width, 1, "2023 DESIGN AND PROGRAM BY TANTAN");
 
     // key wait with 20 sec timeout
-    scan_code = wait_key(20);
+    int scan_code = wait_key(20);
+    if (scan_code == KEY_SCAN_CODE_SPACE) {
+      rc = 0;
+      break;
+    } else if (scan_code == KEY_SCAN_CODE_ESC) {
+      rc = 1;
+      break;
+    }
 
-  } while (scan_code != KEY_SCAN_CODE_SPACE && scan_code != KEY_SCAN_CODE_ESC);
+  }
 
-  return scan_code;
+  return rc;
 }
 
 // ending
 int game_ending_event(GAME_HANDLE* game) {
 
+  WAIT_VSYNC;
+  WAIT_VBLANK;
+
+  // hide bar
+  SPRITE* sp_bar = &(game->sp_set->sp_bar);
+  sp_bar->priority = 0;
+  sp_scroll(sp_bar);
+
+  // hide ball
+  SPRITE* sp_ball = &(game->sp_set->sp_ball);
+  sp_ball->priority = 0;
+  sp_scroll(sp_ball);
+
+  // hide blocks
+  for (int i = 0; i < NUM_OF_BLOCKS; i++) {  
+    SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
+    sp_block->priority = 0;
+    sp_scroll(sp_block);
+  }
+
   SCREEN_HANDLE* scr = game->scr;
   SPRITE* sp_stars = &(game->sp_set->sp_stars[0]);
+
+  game->score += 10000;
 
   WAIT_VSYNC;
   WAIT_VBLANK;
@@ -141,7 +170,11 @@ int game_ending_event(GAME_HANDLE* game) {
   screen_put_text_center(scr, 0, 115, scr->panel_game_width, 2, "PPT MASTER.");
   screen_put_text_center(scr, 0, 130, scr->panel_game_width, 1, "YOU SHALL GET 10000PTS BONUS.");
   screen_put_text_center(scr, 0, 160, scr->panel_game_width, 1, "THE END");
-
+  
+  static char score[] = "             ";
+  sprintf(score, "%10d", game->score);
+  screen_put_text(scr, scr->panel_score_x + 8,  50, 1, score);
+  
   adpcm_play(&game->adpcm_set->adpcm_ending_music);
 
   int scan_code = 0;
@@ -157,12 +190,12 @@ int game_ending_event(GAME_HANDLE* game) {
     WAIT_VSYNC;
     WAIT_VBLANK;
 
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < NUM_OF_STARS; i++) {
       sp_scroll(&sp_stars[i]);  
     }
 
     // move stars in z-axis
-    for (int i = 0; i < 24; i++) {
+    for (int i = 0; i < NUM_OF_STARS; i++) {
 
       int d = scr->panel_game_depth;
 
@@ -187,7 +220,7 @@ int game_ending_event(GAME_HANDLE* game) {
   }
 
   // hide stars
-  for (int i = 0; i < 24; i++) {
+  for (int i = 0; i < NUM_OF_STARS; i++) {
     sp_stars[i].priority = 0;
     sp_scroll(&sp_stars[i]);  
   }
@@ -212,7 +245,7 @@ int game_over_event(GAME_HANDLE* game) {
   sp_ball->priority = 0;
   sp_scroll(sp_ball);
 
-  for (int i = 0; i < 48; i++) {  
+  for (int i = 0; i < NUM_OF_BLOCKS; i++) {  
     SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
     sp_block->priority = 0;
     sp_scroll(sp_block);
@@ -227,13 +260,51 @@ void game_round_start_event(GAME_HANDLE* game) {
   // screen handle
   SCREEN_HANDLE* scr = game->scr;
 
+  // hide ball
+  SPRITE* sp_ball = &(game->sp_set->sp_ball);
+  sp_ball->priority = 0;
+  sp_scroll(sp_ball);
+
+  // reset bar position
+  SPRITE* sp_bar = &(game->sp_set->sp_bar);
+  sp_bar->pos_x = scr->panel_game_x + ( scr->panel_game_width - 64 ) / 2;
+  sp_bar->pos_y = scr->panel_game_y + scr->panel_game_height * 90 / 100;
+  sp_bar->pos_x2 = 4;     // velocity
+  sp_bar->priority = 3;
+  sp_bar->invalidate = 0;
+
+  // reset ball position
+  //SPRITE* sp_ball = &(game->sp_set->sp_ball);
+  sp_ball->pos_x = scr->panel_game_x + scr->panel_game_width / 2;
+  sp_ball->pos_y = scr->panel_game_y + scr->panel_game_height * 2 / 3;
+  sp_ball->pos_x2 = 1;    // velocity
+  sp_ball->pos_y2 = -1;   // velocity
+  sp_ball->priority = 3;
+  sp_ball->invalidate = 0;
+
+  // reset blocks
+  for (int i = 0; i < NUM_OF_BLOCKS; i++) {
+    SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
+    sp_block->pos_x = 16 + (i % 8) * 32;
+    sp_block->pos_y = 16 + (i / 8) * 16;
+    sp_block->priority = 3;
+    sp_block->invalidate = 0;
+    if (i < 6) {
+      sp_block->pos_z = 2;      // life
+    } else if (i < 24) {
+      sp_block->pos_z = 1;      // life
+    } else {
+      sp_block->pos_z = 1;      // life
+    }
+  }
+
   // wait vsync
   WAIT_VSYNC;
   WAIT_VBLANK;
 
   // clear game panel
   screen_clear_panel_text(scr, 0);
-  screen_fill_panel(scr, 0, 1 + game->round % 4);
+  screen_fill_panel(scr, 0, 1 + ( game->round - 1 ) % 4);
   screen_scroll(scr, 0, 0);
 
   // show round number
@@ -241,14 +312,11 @@ void game_round_start_event(GAME_HANDLE* game) {
   sprintf(round, "ROUND %d", game->round);
   screen_put_text(scr, scr->panel_score_x + 8, 200, 1, round);
 
-  SPRITE* sp_bar = &(game->sp_set->sp_bar);
-  SPRITE* sp_ball = &(game->sp_set->sp_ball);
-  SPRITE* sp_blocks = &(game->sp_set->sp_blocks[0]);
-
   // show bar and blocks
   sp_scroll(sp_bar);
-  for (int i = 0; i < 48; i++) {
-    sp_scroll(&sp_blocks[i]);
+  for (int i = 0; i < NUM_OF_BLOCKS; i++) {
+    SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
+    sp_scroll(sp_block);
   }
 
   // message
@@ -260,11 +328,27 @@ void game_round_start_event(GAME_HANDLE* game) {
   sp_scroll(sp_ball);
 }
 
+// round clear
+void game_round_clear_event(GAME_HANDLE* game) {
+
+  // screen handle
+  SCREEN_HANDLE* scr = game->scr;
+
+  // wait vsync
+  WAIT_VSYNC;
+  WAIT_VBLANK;
+
+  // message
+  screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "ROUND CLEAR");
+  wait_time(5);
+  screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "           ");
+}
+
 // game round loop
 int game_round_loop(GAME_HANDLE* game) {
 
   // return code
-  int rc = 0;
+  int rc = 0;     // 0: clear  1: esc  -1: game over
 
   // screen handle
   SCREEN_HANDLE* scr = game->scr;
@@ -272,94 +356,154 @@ int game_round_loop(GAME_HANDLE* game) {
   // sprite pointers
   SPRITE* sp_bar = &(game->sp_set->sp_bar);
   SPRITE* sp_ball = &(game->sp_set->sp_ball);
-  SPRITE* sp_blocks = &(game->sp_set->sp_blocks[0]);
 
   // adpcm set
   ADPCM_SET* adpcm_set = game->adpcm_set;
 
+  // number of blocks remained
+  int remained_blocks = 5;
+
   // round loop
   for (;;) {
 
-#ifdef USE_JOYSTICK
     // joy stick check
     int joy = JOYGET(0);
     if ((joy & JOY_SNS_LEFT) == 0) {
       if (sp_bar->pos_x > scr->panel_game_x) {
         sp_bar->pos_x -= sp_bar->pos_x2;
+        sp_bar->invalidate = 1;
       }
     }
     if ((joy & JOY_SNS_RIGHT) == 0) {
       if ((sp_bar->pos_x + 16 * sp_bar->spp->size_x - 1) < scr->panel_game_x + scr->panel_game_width) {
         sp_bar->pos_x += sp_bar->pos_x2;
+        sp_bar->invalidate = 1;
       }
     }
-#endif
 
     // keyboard check
-    if (B_KEYSNS() != 0) {
-      int scan_code = B_KEYINP() >> 8;
-      switch (scan_code) {
-        case KEY_SCAN_CODE_LEFT:
-          if (sp_bar->pos_x > scr->panel_game_x) {
-            sp_bar->pos_x -= sp_bar->pos_x2;
-          }
-          break;
-        case KEY_SCAN_CODE_RIGHT:
-          if ((sp_bar->pos_x + 16 * sp_bar->spp->size_x - 1) < scr->panel_game_x + scr->panel_game_width) {
-            sp_bar->pos_x += sp_bar->pos_x2;
-          }
-          break;
-        case KEY_SCAN_CODE_ESC:
-          goto exit;
+    if (BITSNS(KEY_GRP_LEFT) & KEY_SNS_LEFT) {
+      if (sp_bar->pos_x > scr->panel_game_x) {
+        sp_bar->pos_x -= sp_bar->pos_x2;
+        sp_bar->invalidate = 1;
       }
+    }
+    if (BITSNS(KEY_GRP_RIGHT) & KEY_SNS_RIGHT) {
+      if ((sp_bar->pos_x + 16 * sp_bar->spp->size_x - 1) < scr->panel_game_x + scr->panel_game_width) {
+        sp_bar->pos_x += sp_bar->pos_x2;
+        sp_bar->invalidate = 1;
+      }
+    }
+    if (BITSNS(KEY_GRP_ESC) & KEY_SNS_ESC) {
+      rc = 1;
+      goto exit;
     }
 
     // ball move
     sp_ball->pos_x += sp_ball->pos_x2;
     sp_ball->pos_y += sp_ball->pos_y2;
+    sp_ball->invalidate = 1;
 
     // collision check (ball and wall)
     if ((sp_ball->pos_x + 5) < scr->panel_game_x) {
       sp_ball->pos_x2 = 1 + rand() % 4;
       sp_ball->pos_x += 2 * ( scr->panel_game_x - sp_ball->pos_x - 5 );
+      sp_ball->invalidate = 1;
       adpcm_play(&adpcm_set->adpcm_block2);
     }
     if ((sp_ball->pos_x + 11) > scr->panel_game_x + scr->panel_game_width) {
       sp_ball->pos_x2 = -(1 + rand() % 4);
       sp_ball->pos_x -= 2 * ( sp_ball->pos_x + 11 - scr->panel_game_x - scr->panel_game_width );
+      sp_ball->invalidate = 1;
+      adpcm_play(&adpcm_set->adpcm_block2);
+    }
+    if ((sp_ball->pos_y + 3) < scr->panel_game_y) {
+      sp_ball->pos_y2 = 1 + rand() % 4;
+      sp_ball->pos_y += 2 * ( scr->panel_game_y - sp_ball->pos_y - 3 );
+      sp_ball->invalidate = 1;
       adpcm_play(&adpcm_set->adpcm_block2);
     }
 
     // collision check (ball and bar)
-    if (sp_ball->pos_x + 11 >= sp_bar->pos_x && sp_ball->pos_x + 11 <= sp_bar->pos_x + 64 &&
-        sp_ball->pos_y + 11 >= sp_bar->pos_y && sp_ball->pos_y + 11 <= sp_bar->pos_y + 12 ) {
+    if (sp_ball->pos_x + 11 >= sp_bar->pos_x && sp_ball->pos_x + 5 <= sp_bar->pos_x + 63 &&
+        sp_ball->pos_y + 10 >= sp_bar->pos_y && sp_ball->pos_y + 10 <= sp_bar->pos_y + 15 ) {
           sp_ball->pos_y2 = -(1 + rand() % 4);
-          sp_ball->pos_y -= 2*(sp_ball->pos_y + 11 - sp_bar->pos_y);
+          sp_ball->pos_y -= 2*(sp_ball->pos_y + 10 - sp_bar->pos_y);
+          sp_ball->invalidate = 1;
           adpcm_play(&adpcm_set->adpcm_bar);
     }
 
     // collision check (ball and block)
-    if (sp_ball->pos_y < sp_blocks[40].pos_y+8) {
-      sp_ball->pos_y2 = (1 + rand() % 4);
-      sp_ball->pos_y += 2*(sp_blocks[40].pos_y+8 - sp_ball->pos_y);
-      adpcm_play(&adpcm_set->adpcm_block1);
+    for (int i = 0; i < NUM_OF_BLOCKS; i++) {
+      SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
+      if (sp_block->pos_z <= 0) continue;                 // already broken
+
+      if (sp_ball->pos_x + 11 >= sp_block->pos_x && sp_ball->pos_x + 5 <= sp_block->pos_x + 31 &&
+          ((sp_ball->pos_y2 < 0 && sp_ball->pos_y + 5 < sp_block->pos_y+14 && sp_ball->pos_y + 5 > sp_block->pos_y) ||
+           (sp_ball->pos_y2 > 0 && sp_ball->pos_y + 11 > sp_block->pos_y && sp_ball->pos_y + 11 < sp_block->pos_y))) {
+
+        if (sp_ball->pos_y2 < 0) {
+          sp_ball->pos_y2 = 1 + rand() % 4;
+          sp_ball->pos_y += 2*(sp_block->pos_y + 14 - sp_ball->pos_y - 5);
+        } else {
+          sp_ball->pos_y2 = -(1 + rand() % 4);
+          sp_ball->pos_y -= 2*(sp_block->pos_y - sp_ball->pos_y - 11);
+        }
+
+        sp_block->pos_z--;
+        if (sp_block->pos_z <= 0) {
+          game->score += sp_block->pos_z2;
+          game->score_invalidate = 1;
+          sp_block->priority = 0;
+          remained_blocks--;
+        }
+        sp_block->invalidate = 1;
+        adpcm_play(&adpcm_set->adpcm_block1);
+
+      }
+
     }
 
     // ball out check
     if (sp_ball->pos_y >= scr->panel_game_y + scr->panel_game_height) {
       adpcm_play(&adpcm_set->adpcm_over);
-      rc = 1;   // game over
+      rc = -1;   // game over
       break;
     }
 
     WAIT_VSYNC;
     WAIT_VBLANK;
 
-    sp_scroll(sp_bar);
-    sp_scroll(sp_ball);
+    if (sp_bar->invalidate) {
+      sp_scroll(sp_bar);
+      sp_bar->invalidate = 0;
+    }
+    if (sp_ball->invalidate) {
+      sp_scroll(sp_ball);
+      sp_ball->invalidate = 0;
+    }
+    for (int i = 0; i < NUM_OF_BLOCKS; i++) {
+      SPRITE* sp_block = &(game->sp_set->sp_blocks[i]);
+      if (sp_block->invalidate) {
+        sp_scroll(sp_block);
+        sp_block->invalidate = 0;
+      }
+    }
+    if (game->score_invalidate) {
+      static char score[] = "             ";
+      sprintf(score, "%10d", game->score);
+      screen_put_text(scr, scr->panel_score_x + 8,  50, 1, score);
+      game->score_invalidate = 0;
+    }
 
+    if (remained_blocks <= 0) break;
   }
 
 exit:
+  // flush key buffers
+  while (B_KEYSNS() != 0) {
+    B_KEYINP();
+  }
+
   return rc;    
 }

@@ -11,8 +11,4 @@ extern unsigned char adpcm_data2[ ADPCM_DATA2_LENGTH ];
 extern unsigned char adpcm_data3[ ADPCM_DATA3_LENGTH ];
 extern unsigned char adpcm_data4[ ADPCM_DATA4_LENGTH ];
 
-#define ADPCM_DATA_MUSIC1_LENGTH (62500)
-
-extern unsigned char adpcm_data_music1[ ADPCM_DATA_MUSIC1_LENGTH ];
-
 #endif

@@ -45,7 +45,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
 
 * サウンドデータ(MUSIC)フリー素材
-  * [DOVA-SYNDROME](https://dova-s.jp/)
+  * [DOVA-SYNDROME](https://dova-s.jp/) "Piece of a Dream" Thanks to FLASH☆BEATさん
   * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
 
 * 動作確認
@@ -63,3 +63,14 @@ HLK301.X は run68上で Out of memory が多発するので純正の LK.X を�
 ![](images/11.gif)
 
 ![](images/13.gif)
+
+---
+
+## 実装と設計
+
+これから X680x0 C言語ゲームプログラミングを再開したい、新たに始めたいという方に向けて、実装と設計について覚書を残しておきます。
+
+### 全体デザイン
+
+![](images/design1.png)
+

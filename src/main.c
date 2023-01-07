@@ -12,6 +12,8 @@
 #include "adpcm.h"
 #include "data_sprite.h"
 #include "data_adpcm.h"
+#include "data_music.h"
+#include "data_logo.h"
 #include "game.h"
 
 // setup screen
@@ -32,10 +34,10 @@ void setup_screen(SCREEN_HANDLE* scr) {
   scr->panel_score_y = 0;
 
   scr->panel_colors[0] = 0x0000;
-  scr->panel_colors[1] = 0x18e1;
-  scr->panel_colors[2] = 0x794b;
-  scr->panel_colors[3] = 0x515f;  
-  scr->panel_colors[4] = 0x248b;  
+  scr->panel_colors[1] = 0x794b;
+  scr->panel_colors[2] = 0x18e1;
+  scr->panel_colors[3] = 0x248b;  
+  scr->panel_colors[4] = 0x515f;  
 
   scr->text_colors[0] = 0xffff;
   scr->text_colors[1] = 0x07c1;
@@ -138,43 +140,46 @@ void setup_sprites(SCREEN_HANDLE* scr, SPRITE_SET* sp_set, SPRITE_PATTERN_SET* s
   // bar
   SPRITE* sp_bar = &sp_set->sp_bar;
   sp_bar->sprite_id = 0;
-  sp_bar->pos_x = scr->panel_game_x + ( scr->panel_game_width - 64 ) / 2;
-  sp_bar->pos_y = scr->panel_game_y + scr->panel_game_height * 90 / 100;
-  sp_bar->pos_x2 = 4;     // velocity
-  sp_bar->priority = 3;
+//  sp_bar->pos_x = scr->panel_game_x + ( scr->panel_game_width - 64 ) / 2;
+//  sp_bar->pos_y = scr->panel_game_y + scr->panel_game_height * 90 / 100;
+//  sp_bar->pos_x2 = 4;     // velocity
+//  sp_bar->priority = 3;
   sp_bar->spp = &spp_set->spp_bar;
 
   // ball
   SPRITE* sp_ball = &sp_set->sp_ball;
   sp_ball->sprite_id = 4;
-  sp_ball->pos_x = scr->panel_game_x + scr->panel_game_width / 2;
-  sp_ball->pos_y = scr->panel_game_y + scr->panel_game_height * 2 / 3;
-  sp_ball->pos_x2 = 1;    // velocity
-  sp_ball->pos_y2 = -1;   // velocity
-  sp_ball->priority = 3;
+//  sp_ball->pos_x = scr->panel_game_x + scr->panel_game_width / 2;
+//  sp_ball->pos_y = scr->panel_game_y + scr->panel_game_height * 2 / 3;
+//  sp_ball->pos_x2 = 1;    // velocity
+//  sp_ball->pos_y2 = -1;   // velocity
+//  sp_ball->priority = 3;
   sp_ball->spp = &spp_set->spp_ball;
 
   // blocks
-  for (int i = 0; i < 48; i++) {
+  for (int i = 0; i < NUM_OF_BLOCKS; i++) {
     SPRITE* sp_block = &(sp_set->sp_blocks[i]);
     sp_block->sprite_id = 5 + i*2;
-    sp_block->pos_x = 16 + (i % 8) * 32;
-    sp_block->pos_y = 16 + (i / 8) * 16;
-    sp_block->priority = 3;
-    if (i < 16) {
+//    sp_block->pos_x = 16 + (i % 8) * 32;
+//    sp_block->pos_y = 16 + (i / 8) * 16;
+//    sp_block->priority = 3;
+    if (i < 8) {
       sp_block->spp = &spp_set->spp_block1;
-      sp_block->pos_z = 3;  // life
-    } else if (i < 32) {
+      sp_block->pos_z = 2;      // life
+      sp_block->pos_z2 = 500;   // score
+    } else if (i < 24) {
       sp_block->spp = &spp_set->spp_block2;
-      sp_block->pos_z = 2;  // life
+      sp_block->pos_z = 1;      // life
+      sp_block->pos_z2 = 200;   // score
     } else {
       sp_block->spp = &spp_set->spp_block3;
-      sp_block->pos_z = 1;  // life
+      sp_block->pos_z = 1;      // life
+      sp_block->pos_z2 = 100;   // score
     }
   }
 
   // stars (ending only)
-  for (int i = 0; i < 24; i++) {
+  for (int i = 0; i < NUM_OF_STARS; i++) {
     SPRITE* sp_star = &(sp_set->sp_stars[i]);
     sp_star->sprite_id = 101 + i;
     sp_star->pos_x = 0;
@@ -250,11 +255,10 @@ int main(int argc, char* argv[]) {
 
   // initialize game object
   static GAME_HANDLE game;
-  game_open(&game, &scr, &sp_set, &adpcm_set);
+  game_open(&game, &scr, &sp_set, &adpcm_set, logo_data);
 
   // game opening
-  int scan_code = game_opening_event(&game);
-  if (scan_code == KEY_SCAN_CODE_ESC) goto exit;
+  if (game_opening_event(&game) != 0) goto exit;
 
   // round loop
   int rc = 0;
@@ -265,23 +269,32 @@ int main(int argc, char* argv[]) {
 
     // round loop
     rc = game_round_loop(&game);
-    if (rc == 0) {
-      game.round++;
-      if (game.round > 4) break;
+    
+    switch (rc) {
+
+      case 0:  
+        // round clear
+        game_round_clear_event(&game);
+        game.round++;
+        break;
+
+      case 1:
+        // esc key
+        goto exit;
+      
+      case -1:
+        // game over
+        game_over_event(&game);
+        break;
+    }
+ 
+    if (game.round > 4) {
+      // true end
+      game_ending_event(&game);
+      break;
     }
 
   } while (rc == 0);
-
-  // game over
-  if (rc != 0) {
-    // game over
-    game_over_event(&game);
-
-  } else {
-    // true end
-    game_ending_event(&game);
-
-  }
 
 exit:
   // game close

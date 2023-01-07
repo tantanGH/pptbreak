@@ -3,24 +3,25 @@
 
 // sprite pattern class
 typedef struct {
-  int pattern_id;
-  int size_x;
-  int size_y;
-  int palette_block;
+  short pattern_id;
+  short size_x;
+  short size_y;
+  short palette_block;
   unsigned short* pattern_data;
   unsigned short* palette_data;
 } SPRITE_PATTERN;
 
 // sprite class
 typedef struct {
-  int sprite_id;
+  short sprite_id;
   int pos_x;
   int pos_y;
   int pos_z;      // optional
   int pos_x2;     // optional
   int pos_y2;     // optional
   int pos_z2;     // optional
-  int priority;
+  short priority;
+  volatile short invalidate;    // for repaint
   SPRITE_PATTERN* spp;
 } SPRITE;
 
