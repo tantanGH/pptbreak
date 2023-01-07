@@ -140,41 +140,44 @@ void setup_sprites(SCREEN_HANDLE* scr, SPRITE_SET* sp_set, SPRITE_PATTERN_SET* s
   // bar
   SPRITE* sp_bar = &sp_set->sp_bar;
   sp_bar->sprite_id = 0;
-//  sp_bar->pos_x = scr->panel_game_x + ( scr->panel_game_width - 64 ) / 2;
-//  sp_bar->pos_y = scr->panel_game_y + scr->panel_game_height * 90 / 100;
-//  sp_bar->pos_x2 = 4;     // velocity
-//  sp_bar->priority = 3;
+  sp_bar->pos_x = scr->panel_game_x + ( scr->panel_game_width - 64 ) / 2;
+  sp_bar->pos_y = scr->panel_game_y + scr->panel_game_height * 90 / 100;
+  sp_bar->pos_x2 = 4;     // velocity
+  sp_bar->priority = 3;
   sp_bar->spp = &spp_set->spp_bar;
 
   // ball
   SPRITE* sp_ball = &sp_set->sp_ball;
   sp_ball->sprite_id = 4;
-//  sp_ball->pos_x = scr->panel_game_x + scr->panel_game_width / 2;
-//  sp_ball->pos_y = scr->panel_game_y + scr->panel_game_height * 2 / 3;
-//  sp_ball->pos_x2 = 1;    // velocity
-//  sp_ball->pos_y2 = -1;   // velocity
-//  sp_ball->priority = 3;
+  sp_ball->pos_x = scr->panel_game_x + scr->panel_game_width / 2;
+  sp_ball->pos_y = scr->panel_game_y + scr->panel_game_height * 2 / 3;
+  sp_ball->pos_x2 = 1;    // velocity
+  sp_ball->pos_y2 = -1;   // velocity
+  sp_ball->priority = 3;
   sp_ball->spp = &spp_set->spp_ball;
 
   // blocks
   for (int i = 0; i < NUM_OF_BLOCKS; i++) {
     SPRITE* sp_block = &(sp_set->sp_blocks[i]);
     sp_block->sprite_id = 5 + i*2;
-//    sp_block->pos_x = 16 + (i % 8) * 32;
-//    sp_block->pos_y = 16 + (i / 8) * 16;
-//    sp_block->priority = 3;
+    sp_block->pos_x = 16 + (i % 8) * 32;
+    sp_block->pos_y = 16 + (i / 8) * 16;
+    sp_block->priority = 3;
     if (i < 8) {
       sp_block->spp = &spp_set->spp_block1;
       sp_block->pos_z = 2;      // life
       sp_block->pos_z2 = 500;   // score
+      sp_block->pos_y2 = 2;     // velocity
     } else if (i < 24) {
       sp_block->spp = &spp_set->spp_block2;
       sp_block->pos_z = 1;      // life
       sp_block->pos_z2 = 200;   // score
+      sp_block->pos_y2 = 1;     // velocity
     } else {
       sp_block->spp = &spp_set->spp_block3;
       sp_block->pos_z = 1;      // life
       sp_block->pos_z2 = 100;   // score
+      sp_block->pos_y2 = 0;     // velocity
     }
   }
 
@@ -257,44 +260,55 @@ int main(int argc, char* argv[]) {
   static GAME_HANDLE game;
   game_open(&game, &scr, &sp_set, &adpcm_set, logo_data);
 
-  // game opening
-  if (game_opening_event(&game) != 0) goto exit;
+  // game loop
+  for (;;) {
 
-  // round loop
-  int rc = 0;
-  do {
+    // game opening
+    if (game_opening_event(&game) != 0) goto exit;
 
-    // round start
-    game_round_start_event(&game);
+    // reset game
+    game_reset(&game);
 
-    // round loop
-    rc = game_round_loop(&game);
+    int rc = 0;
+    do {
+
+      // round start
+      game_round_start_event(&game);
+
+      // round loop
+      rc = game_round_loop(&game);
     
-    switch (rc) {
+      switch (rc) {
 
-      case 0:  
-        // round clear
-        game_round_clear_event(&game);
-        game.round++;
-        break;
+        case 0:  
+          // round clear
+          game_round_clear_event(&game);
+          game.round++;
+          break;
 
-      case 1:
-        // esc key
-        goto exit;
+        case 1:
+          // esc key
+          goto exit;
       
-      case -1:
-        // game over
-        game_over_event(&game);
-        break;
-    }
- 
-    if (game.round > 4) {
-      // true end
-      game_ending_event(&game);
-      break;
-    }
+        case 2:
+          // game over
+          game_over_event(&game);
+          break;
 
-  } while (rc == 0);
+        case -1:
+          // fatal error
+          goto exit;
+      }
+ 
+      if (game.round > 4) {
+        // true end
+        game_ending_event(&game);
+        break;
+      }
+
+    } while (rc == 0);
+
+  }
 
 exit:
   // game close
@@ -303,5 +317,5 @@ exit:
   // resume screen
   resume_screen(&scr);
 
-  return rc;
+  return 0;
 }

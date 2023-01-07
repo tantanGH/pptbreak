@@ -54,6 +54,7 @@ void game_close(GAME_HANDLE* game);
 int game_opening_event(GAME_HANDLE* game);
 int game_ending_event(GAME_HANDLE* game);
 int game_over_event(GAME_HANDLE* game);
+void game_reset(GAME_HANDLE* game);
 void game_round_start_event(GAME_HANDLE* game);
 void game_round_clear_event(GAME_HANDLE* game);
 int game_round_loop(GAME_HANDLE* game);
