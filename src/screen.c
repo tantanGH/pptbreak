@@ -1,4 +1,5 @@
 #include <iocslib.h>
+#include <doslib.h>
 #include <string.h>
 
 #include "screen.h"
@@ -12,8 +13,11 @@
 void screen_init(SCREEN_HANDLE* scr) {
 
   CRTMOD(12);
-  B_CUROFF();
   G_CLR_ON();
+
+  scr->original_fnk_mode = C_FNKMOD(-1);
+  C_FNKMOD(3);
+  B_CUROFF();
 
   crtc_set_mode(SCREEN_MODE_384x256);
 
@@ -38,7 +42,9 @@ void screen_reset(SCREEN_HANDLE* scr) {
   crtc_set_mode(SCREEN_MODE_768x512);
 
   CRTMOD(16);
-  G_CLR_ON();    
+  G_CLR_ON();
+
+  C_FNKMOD(scr->original_fnk_mode);
   B_CURON();
 
   TPALET2(1, scr->original_tpalette[0]);

@@ -26,7 +26,7 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 ## 開発環境
 
 * クロスコンパイル
-  * [xdev68k](https://guthub.com/yosshin4004/xdev68/) ([gcc 12.2.0に変更](https://github.com/tantanGH/distribution/blob/main/INSTALL_xdev68k_M1Mac.md))
+  * [xdev68k](https://github.com/yosshin4004/xdev68k/) ([gcc 12.2.0に変更](https://github.com/tantanGH/distribution/blob/main/INSTALL_xdev68k_M1Mac.md))
   * XC 2.1 ライブラリ
   * Microsoft Visual Code Studio
   * MacBoor Air (2020, Apple Silicon, RAM8GB, SSD512GB)
@@ -39,8 +39,12 @@ PPTBRKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * [Cool Text](https://ja.cooltext.com/)
   * データコンバート [pngdeband](https://github.com/tantanGH/pngdeband/), [png2sp](https://github.com/tantanGH/png2sp/)
 
-* サウンドデータ作成
+* サウンドデータ(SE)作成
   * [peko-step 効果音メーカー](https://www.peko-step.com/tool/soundeffect/)
+  * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
+
+* サウンドデータ(MUSIC)無料素材利用
+  * [DOVA-SYNDROME](https://dova-s.jp/)
   * データコンバート [wav2adpcm](https://github.com/tantanGH/wav2adpcm/)
 
 * 動作確認

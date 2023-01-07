@@ -1,6 +1,8 @@
 #ifndef __H_SCREEN__
 #define __H_SCREEN__
 
+#include <iocslib.h>
+
 #define FONT_ADDR_8x8    ((unsigned char*)0xF3A000)
 #define FONT_ADDR_8x16   ((unsigned char*)0xF3A800)
 #define FONT_ADDR_12x12  ((unsigned char*)0xF3B800)
@@ -39,6 +41,9 @@ typedef struct {
 
   // original text palettes
   unsigned short original_tpalette[ 3 ];
+
+  // original function key display mode
+  int original_fnk_mode;
 
   // 8x8 bold font data
   struct FNTBUF font_data_8x8[ 256 ];
