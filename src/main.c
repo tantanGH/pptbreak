@@ -249,8 +249,8 @@ static void setup_adpcm(ADPCM_SET* as) {
 int main(int argc, char* argv[]) {
 
   // version check
-  if (argc >= 2 && strcmp(argv[1],"-h")) {
-    printf("pptbreak.x version " VERSION " 2023 by tantan");
+  if (argc >= 2 && (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"-v") == 0)) {
+    printf("pptbreak.x version " VERSION " 2023 by tantan\n");
     return 1;
   }
 
