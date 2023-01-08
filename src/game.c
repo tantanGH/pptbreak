@@ -333,6 +333,10 @@ void game_round_start_event(GAME_HANDLE* game) {
   // message
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "READY");
   wait_time(3);
+
+  // wait vsync
+  WAIT_VSYNC;
+  WAIT_VBLANK;
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "     ");
 
   // show ball
