@@ -400,7 +400,7 @@ static void __attribute__((interrupt)) game_round_vsync_interrupt() {
 int game_round_loop(GAME_HANDLE* game) {
 
   // return code
-  int rc = 0;     // 0: clear  1: esc  -1: game over
+  int rc = 0;     // 0: clear  1: esc  2: game over  -1:fatal error
 
   // screen handle
   SCREEN_HANDLE* scr = game->scr;
