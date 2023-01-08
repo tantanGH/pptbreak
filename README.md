@@ -41,7 +41,7 @@ PPTBKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
   * HAS060.X & LK.X on run68mac Thanks to yunkさん / M.Kamadaさん / GOROmanさん
   * SHARP XC 2.1 ライブラリ
   * Microsoft Visual Studio Code
-  * Apple MacBoor Air (2020, Apple Silicon, RAM8GB, SSD512GB)
+  * Apple MacBook Air (2020, Apple Silicon, RAM8GB, SSD512GB)
 
 * スプライトデータ作成
   * 透過PNG作成 Microsoft PowerPoint
