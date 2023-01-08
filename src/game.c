@@ -363,7 +363,7 @@ void game_round_clear_event(GAME_HANDLE* game) {
 
 //  vsync interrupt handler
 volatile static GAME_HANDLE* vsync_game;
-volatile static int vsync_counter;
+volatile static int vsync_counter = 0;
 static void __attribute__((interrupt)) game_round_vsync_interrupt() {
 
   // sprite pointers
