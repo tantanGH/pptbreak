@@ -38,8 +38,8 @@ PPTBKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 * クロスコンパイル
   * [xdev68k](https://github.com/yosshin4004/xdev68k/) ([gcc 12.2.0に変更](https://github.com/tantanGH/distribution/blob/main/INSTALL_xdev68k_M1Mac.md)) Thanks to ファミべのよっしんさん
-  * HAS060.X & LK.X on run68mac Thanks to yunkさん / M.Kamadaさん / GOROmanさん
-  * SHARP XC 2.1 ライブラリ
+  * HAS060.X on run68mac Thanks to yunkさん / M.Kamadaさん / GOROmanさん
+  * SHARP XC 2.1 ライブラリ & LK.X
   * Microsoft Visual Studio Code
   * Apple MacBook Air (2020, Apple Silicon, RAM8GB, SSD512GB)
 
