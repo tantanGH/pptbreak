@@ -1,10 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <iocslib.h>
-#include <doslib.h>
-
 #include "crtc.h"
 #include "screen.h"
 #include "keyboard.h"
@@ -15,6 +8,13 @@
 #include "data_music.h"
 #include "data_logo.h"
 #include "game.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <iocslib.h>
+#include <doslib.h>
 
 #define VERSION "0.1.0"
 

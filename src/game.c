@@ -1,12 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include "game.h"
 #include "screen.h"
 #include "sprite.h"
 #include "keyboard.h"
 #include "crtc.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 // time wait
 static void wait_time(int sec) {

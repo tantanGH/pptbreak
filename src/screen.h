@@ -60,6 +60,5 @@ void screen_put_text(SCREEN_HANDLE* scr, int x, int y, int color, const char* te
 void screen_put_text_center(SCREEN_HANDLE* scr, int x, int y, int width, int color, const char* text);
 void screen_scroll(SCREEN_HANDLE* scr, int x, int y);
 void screen_put_image(SCREEN_HANDLE* scr, int x, int y, int width, int height, unsigned short* image_data);
-void screen_load_png(SCREEN_HANDLE* scr, int x, int y, int brightness, const char* png_file_name);
 
 #endif

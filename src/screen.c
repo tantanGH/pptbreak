@@ -1,13 +1,9 @@
-#include <iocslib.h>
-#include <doslib.h>
-#include <string.h>
-
 #include "screen.h"
 #include "crtc.h"
 
-#ifdef USE_PNG
-#include "ext/png.h"
-#endif
+#include <iocslib.h>
+#include <doslib.h>
+#include <string.h>
 
 // clear and initialize screen and sprites
 void screen_init(SCREEN_HANDLE* scr) {
@@ -150,30 +146,9 @@ void screen_put_image(SCREEN_HANDLE* scr, int x, int y, int width, int height, u
   unsigned short* p = image_data;
 
   for (int i = 0; i < height; i++) {
-    volatile unsigned short* gvram = GVRAM + ( y + i ) * 512 + x;
+    volatile unsigned short* gvram = REG_GVRAM + ( y + i ) * 512 + x;
     for (int j = 0; j < width; j++) {
       gvram[ j ] = *p++;
     }
   }
 }
-
-#ifdef USE_PNG
-
-// load png image
-void screen_load_png(SCREEN_HANDLE* scr, int x, int y, int brightness, const char* png_file_name) {
-
-  static PNG_DECODE_HANDLE png;
-
-  png.input_buffer_size = 65536;
-  png.output_buffer_size = 65536 * 2;
-  png.use_high_memory = 0;
-  png.brightness = brightness;
-  png.offset_x = x;
-  png.offset_y = y;
-
-  png_init(&png);
-  png_load(&png, png_file_name);
-  png_close(&png);
-}
-
-#endif
