@@ -352,10 +352,16 @@ void game_round_clear_event(GAME_HANDLE* game) {
   // message
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "ROUND CLEAR");
   wait_time(5);
+
+  // wait vsync
+  WAIT_VSYNC;
+  WAIT_VBLANK;
+
+  // delete message;
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "           ");
 }
 
-//  vdisk interrupt handler
+//  vsync interrupt handler
 volatile static GAME_HANDLE* vsync_game;
 volatile static int vsync_counter;
 static void __attribute__((interrupt)) game_round_vsync_interrupt() {
