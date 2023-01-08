@@ -265,19 +265,19 @@ int main(int argc, char* argv[]) {
   setup_screen(&scr);
   
   // define sprite patterns and palettes
-  static SPRITE_PATTERN_SET spp_set;
+  static SPRITE_PATTERN_SET spp_set = { 0 };
   setup_sprite_patterns(&spp_set);
   
   // initialize sprite objects
-  static SPRITE_SET sp_set;
+  static SPRITE_SET sp_set = { 0 };
   setup_sprites(&scr, &sp_set, &spp_set);
   
   // initialize adpcm sound objects
-  static ADPCM_SET adpcm_set;
+  static ADPCM_SET adpcm_set = { 0 };
   setup_adpcm(&adpcm_set);
 
   // initialize game object
-  static GAME_HANDLE game;
+  static GAME_HANDLE game = { 0 };
   game_open(&game, &scr, &sp_set, &adpcm_set, logo_data);
 
   // game loop
