@@ -216,12 +216,12 @@ static void setup_adpcm(ADPCM_SET* as) {
   as->adpcm_bar.length = ADPCM_DATA2_LENGTH;
   as->adpcm_bar.mode = ADPCM_MODE_15KHZ_LR;
   
-  as->adpcm_block1.data = adpcm_data5;
-  as->adpcm_block1.length = ADPCM_DATA5_LENGTH;
+  as->adpcm_block1.data = adpcm_data3;
+  as->adpcm_block1.length = ADPCM_DATA3_LENGTH;
   as->adpcm_block1.mode = ADPCM_MODE_15KHZ_LR;
   
-  as->adpcm_block2.data = adpcm_data3;
-  as->adpcm_block2.length = ADPCM_DATA3_LENGTH;
+  as->adpcm_block2.data = adpcm_data5;
+  as->adpcm_block2.length = ADPCM_DATA5_LENGTH;
   as->adpcm_block2.mode = ADPCM_MODE_15KHZ_LR;
 
   as->adpcm_wall1.data = adpcm_data4;

@@ -8,8 +8,6 @@
 #include "keyboard.h"
 #include "crtc.h"
 
-//#define USE_JOYSTICK
-
 // time wait
 static void wait_time(int sec) {
 
@@ -479,7 +477,7 @@ int game_round_loop(GAME_HANDLE* game) {
           sp_blocks[i].invalidate = 1;
           if (sp_blocks[i].pos_y2 > 0 && sp_blocks[i].pos_y >= scr->panel_game_y + scr->panel_game_width * 1 / 2) {
             sp_blocks[i].pos_y2 *= -1;
-          } else if (sp_blocks[i].pos_y2 < 0 && sp_blocks[i].pos_y <= scr->panel_game_y + 20) {
+          } else if (sp_blocks[i].pos_y2 < 0 && sp_blocks[i].pos_y <= scr->panel_game_y + 32) {
             sp_blocks[i].pos_y2 *= -1;
           }
         }
@@ -496,7 +494,7 @@ int game_round_loop(GAME_HANDLE* game) {
           sp_blocks[i].invalidate = 1;
           if (sp_blocks[i].pos_y2 > 0 && sp_blocks[i].pos_y >= scr->panel_game_y + scr->panel_game_width * 3 / 5) {
             sp_blocks[i].pos_y2 *= -1;
-          } else if (sp_blocks[i].pos_y2 < 0 && sp_blocks[i].pos_y <= scr->panel_game_y + 20) {
+          } else if (sp_blocks[i].pos_y2 < 0 && sp_blocks[i].pos_y <= scr->panel_game_y + 16) {
             sp_blocks[i].pos_y2 *= -1;
           }
         }
