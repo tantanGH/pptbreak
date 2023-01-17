@@ -240,7 +240,7 @@ int game_over_event(GAME_HANDLE* game) {
   SCREEN_HANDLE* scr = game->scr;
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "GAME OVER");
   
-  int scan_code = wait_key(20);
+  int scan_code = wait_key(10);
 
   // sprite pointers
   SPRITE* sp_bar = &(game->sp_set->sp_bar);
