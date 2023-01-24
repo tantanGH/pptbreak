@@ -16,7 +16,7 @@
 #include <iocslib.h>
 #include <doslib.h>
 
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 
 // setup screen
 void setup_screen(SCREEN_HANDLE* scr) {

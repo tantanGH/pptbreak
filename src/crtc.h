@@ -13,6 +13,8 @@
 #define REG_GPIP         ((volatile unsigned char*)0xE88001)     // generic I/O port (Inside X68000 p81)
 #define REG_SYSP         ((volatile unsigned char*)0xE8E007)     // system port (Inside/Out X68030 p44)
 #define REG_SCON        ((volatile unsigned short*)0xEB080A)     // p173,185,235 (SP control)
+#define REG_TACR         ((volatile unsigned char*)0xE88019)     // timer-A control register
+#define REG_TADR         ((volatile unsigned char*)0xE8801F)     // timer-A data register
 
 // screen mode
 #define SCREEN_MODE_384x256         (0)

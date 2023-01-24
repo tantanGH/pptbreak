@@ -421,6 +421,8 @@ int game_round_loop(GAME_HANDLE* game) {
 
   // enable vsync interrupt handling
   vsync_game = game;
+  REG_TADR[0] = 2;      // reset Timer-A counter
+  REG_TACR[0] = 8;      // start Timer-A in event count mode
   if (VDISPST((unsigned char*)game_round_vsync_interrupt, 0, 1) != 0) {   // VBLANK, 1/60
     printf("error: cannot use VSYNC interrupt.\n");
     rc = -1;
