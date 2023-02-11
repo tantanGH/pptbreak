@@ -69,7 +69,7 @@ int crtc_set_mode(int mode) {
       REG_SCON[2] = 0x28;             // R06
       REG_SCON[3] = 0x11;             // R20 & 0xff
 
-      REG_VDC_R2[0] = 0x2f;           // test/graphic on, sprite off (w:512 h:512)
+      REG_VDC_R2[0] = 0x2f;           // text/graphic on, sprite off (w:512 h:512)
 
       REG_CRTC_R12[0] = 0;            // scroll position X
       REG_CRTC_R12[1] = 0;            // scroll position Y
