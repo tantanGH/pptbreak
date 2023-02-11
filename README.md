@@ -66,11 +66,11 @@ PPTBKxxx.ZIP をダウンロードし展開して、PPTBREAK.X を実行しま�
 
 ## 動作デモ
 
-![](images/15.gif)
+![](images/15a.gif)
 
-![](images/16.gif)
+![](images/16a.gif)
 
-![](images/17.gif)
+![](images/17a.gif)
 
 ---
 
