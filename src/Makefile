@@ -19,13 +19,14 @@ HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/LK.X #hlk301.x だと out of memory になってしまう
 
 # 実行ファイル名
-TARGET_FILE = PPTBREAK.X
+#TARGET_FILE = PPTBREAK.X
+TARGET_FILE = adpcm_test.x
 
 # Document file
 DOCUMENT_FILE = PPTBREAK.DOC
 
 # Distribution package 
-PACKAGE_FILE = ../PPTBK011.ZIP
+PACKAGE_FILE = ../PPTBK020.ZIP
 
 # ヘッダ検索パス
 INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
@@ -36,10 +37,10 @@ CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall
     -fexec-charset=cp932 -fverbose-asm -fno-defer-pop
 
 # *.c ソースファイル
-C_SRCS = crtc.c screen.c sprite.c adpcm.c game.c main.c
+C_SRCS = adpcm.c adpcm_test.c #crtc.c screen.c sprite.c adpcm.c game.c main.c
 
 # *.s ソースファイル
-ASM_SRCS = data_adpcm.s data_music.s
+ASM_SRCS = data_se.s data_music.s
 
 # リンク対象のライブラリファイル
 LIBS =\
