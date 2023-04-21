@@ -226,7 +226,7 @@ int32_t game_over_event(GAME_HANDLE* game) {
   SCREEN_HANDLE* scr = game->scr;
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "GAME OVER");
   
-  int32_t scan_code = wait_key(10000);
+  int32_t scan_code = wait_key(5000);
 
   sprite_hide(game->sprite, SPID_BAR, 0);
   sprite_hide(game->sprite, SPID_BALL, 0);
@@ -306,7 +306,7 @@ void game_round_start_event(GAME_HANDLE* game) {
 
   // message
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "READY");
-  wait_time(3000);
+  wait_time(1500);
 
   // wait vsync
   WAIT_VSYNC;
@@ -329,7 +329,7 @@ void game_round_clear_event(GAME_HANDLE* game) {
 
   // message
   screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "ROUND CLEAR");
-  wait_time(5);
+  wait_time(3000);
 
   // wait vsync
   WAIT_VSYNC;
@@ -400,8 +400,6 @@ int32_t game_round_loop(GAME_HANDLE* game) {
 
   // enable vsync interrupt handling
   vsync_game = game;
-  REG_TADR[0] = 2;      // reset Timer-A counter
-  REG_TACR[0] = 8;      // start Timer-A in event count mode
   if (VDISPST((unsigned char*)game_round_vsync_interrupt, 0, 1) != 0) {   // VBLANK, 1/60
     printf("error: cannot use VSYNC interrupt.\n");
     rc = -1;
@@ -495,30 +493,34 @@ int32_t game_round_loop(GAME_HANDLE* game) {
     // collision check (ball and wall)
     if ((sp_ball->pos_x +5) < scr->panel_game_x) {    // left wall
       sp_ball->pos_x2 = 1 + rand() % 4;
-      sp_ball->pos_x += 2 * ( scr->panel_game_x - sp_ball->pos_x -5 );
+      //sp_ball->pos_x += 2 * ( scr->panel_game_x - sp_ball->pos_x -5 );
+      sp_ball->pos_x = scr->panel_game_x - 5;
       sp_ball->invalidate = 1;
-      adpcm_play_se(adpcm, 1);
+      adpcm_play_se(adpcm, 4);
     }
     if ((sp_ball->pos_x + 11) > scr->panel_game_x + scr->panel_game_width) {    // right wall
       sp_ball->pos_x2 = -(1 + rand() % 4);
-      sp_ball->pos_x -= 2 * ( sp_ball->pos_x +11 - scr->panel_game_x - scr->panel_game_width );
+      //sp_ball->pos_x -= 2 * ( sp_ball->pos_x +11 - scr->panel_game_x - scr->panel_game_width );
+      sp_ball->pos_x = scr->panel_game_x + scr->panel_game_width - 11;
       sp_ball->invalidate = 1;
-      adpcm_play_se(adpcm, 2);
+      adpcm_play_se(adpcm, 4);
     }
     if ((sp_ball->pos_y +3) < scr->panel_game_y) {    // top wall
       sp_ball->pos_y2 = 1 + rand() % 4;
-      sp_ball->pos_y += 2 * ( scr->panel_game_y - sp_ball->pos_y -3 );
+      //sp_ball->pos_y += 2 * ( scr->panel_game_y - sp_ball->pos_y -3 );
+      sp_ball->pos_y = scr->panel_game_y - 3;
       sp_ball->invalidate = 1;
-      adpcm_play_se(adpcm, 3);
+      adpcm_play_se(adpcm, 4);
     }
 
     // collision check (ball and bar)
     if (sp_ball->pos_x +11 >= sp_bar->pos_x && sp_ball->pos_x +5 <= sp_bar->pos_x +63 &&
         sp_ball->pos_y +10 >= sp_bar->pos_y && sp_ball->pos_y +10 <= sp_bar->pos_y +14 ) {
           sp_ball->pos_y2 = -(1 + rand() % 4);
-          sp_ball->pos_y -= 2*(sp_ball->pos_y +10 - sp_bar->pos_y);   // adjust overflown position
+          //sp_ball->pos_y -= 2*(sp_ball->pos_y +10 - sp_bar->pos_y);   // adjust overflown position
+          sp_ball->pos_y = sp_bar->pos_y - 10;
           sp_ball->invalidate = 1;
-          adpcm_play_se(adpcm, 4);
+          adpcm_play_se(adpcm, 2);
     }
 
     // collision check (ball and block)
@@ -575,7 +577,7 @@ int32_t game_round_loop(GAME_HANDLE* game) {
         }
         sp_block->invalidate = 1;
         if (i < 8) {
-          adpcm_play_se(adpcm, 4);
+          adpcm_play_se(adpcm, 5);
         } else {
           adpcm_play_se(adpcm, 3);
         }
@@ -585,7 +587,7 @@ int32_t game_round_loop(GAME_HANDLE* game) {
 
     // ball out check
     if (sp_ball->pos_y >= scr->panel_game_y + scr->panel_game_height) {
-      adpcm_play_se(adpcm, 5);
+      adpcm_play_se(adpcm, 1);
       rc = 2;   // game over
       break;
     }

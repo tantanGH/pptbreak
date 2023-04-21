@@ -14,8 +14,18 @@
 
 #define VERSION "0.2.0 (2023/04/21)"
 
+#define REG_TACR         ((volatile uint8_t*)0xE88019)     // timer-A control register
+#define REG_TADR         ((volatile uint8_t*)0xE8801F)     // timer-A data register
+
+static volatile int16_t g_vsync_available = 0;
+
+// vsync init
+static void __attribute__((interrupt)) vsync_interrupt() {
+  g_vsync_available = 1;
+}
+
 // main
-int main(int argc, char* argv[]) {
+int32_t main(int argc, char* argv[]) {
 
   // version check
   if (argc >= 2 && (strcmp(argv[1],"-h") == 0 || strcmp(argv[1],"-v") == 0)) {
@@ -44,6 +54,17 @@ int main(int argc, char* argv[]) {
   // initialize game object
   static GAME_HANDLE game = { 0 };
   game_open(&game, &scr, &sprite, &adpcm);
+
+  // wait for vsync interrupt readiness
+  REG_TADR[0] = 2;      // reset Timer-A counter
+  REG_TACR[0] = 8;      // start Timer-A in event count mode
+  g_vsync_available = 0;
+  if (VDISPST((unsigned char*)vsync_interrupt, 0, 1) != 0) {   // VBLANK, 1/60
+    printf("error: VSYNC interrupt is being used by other applications.\n");
+    return -1;
+  }
+  while (g_vsync_available == 0);
+  VDISPST(0, 0, 0);
 
   // game loop
   for (;;) {
