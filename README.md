@@ -57,3 +57,9 @@ X68000Z で直接起動するためのXDFはこちら
   * [XEiJ](https://stdkmd.net/xeij/) Thanks to M.Kamadaさん
 
 ---
+
+### なぜ PPT なのか？
+
+スプライトデータを作成に PowerPoint を使ったからですw
+
+![](images/demo3.png)
