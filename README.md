@@ -16,7 +16,8 @@ A breakout clone powered by PPTX for X680x0
 
 PPTBK020.ZIP をダウンロードし展開して、PPTBREAK.X を実行します。
 
-X68000Z で直接起動するためのXDFはこちら → X68Z_PPTBREAK_20230421.XDF 
+X68000Z で直接起動するためのXDFはこちら
+- [X68Z_PPTBREAK_20230421.XDF](https://github.com/tantanGH/pptbreak/raw/main/xdf/X68Z_PPTBREAK_20230421.XDF)
 
 ---
 
