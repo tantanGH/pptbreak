@@ -2,7 +2,9 @@
 
 A breakout clone powered by PPTX for X680x0
 
-![](images/15a.gif)
+![](images/16a.gif)
+
+![](images/17a.gif)
 
 ---
 
@@ -53,13 +55,5 @@ X68000Z で直接起動するためのXDFはこちら
 
 * 動作確認
   * [XEiJ](https://stdkmd.net/xeij/) Thanks to M.Kamadaさん
-
----
-
-## 動作デモ
-
-![](images/16a.gif)
-
-![](images/17a.gif)
 
 ---
