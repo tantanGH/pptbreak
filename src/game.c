@@ -81,14 +81,13 @@ int32_t game_opening_event(GAME_HANDLE* game) {
 
   screen_scroll(scr, 0, 256);
 
-  //screen_load_png(scr, 7, 50, 100, "title2.png");
   screen_put_image(scr, 7, 50, 269, 41, title_logo_data);
 
   for (;;) {
 
     screen_clear_panel_text(scr, 0);
 
-    for (int i = 0; i < 256; i++) {
+    for (int16_t i = 0; i < 256; i++) {
 
       WAIT_VSYNC;
       WAIT_VBLANK;
@@ -107,11 +106,12 @@ int32_t game_opening_event(GAME_HANDLE* game) {
     screen_scroll(scr, 0, 0);
 
     // put text
-    screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "PUSH SPACE KEY");
-    screen_put_text_center(scr, 0, 210, scr->panel_game_width, 1, "2023 DESIGN AND PROGRAM BY TANTAN");
+    screen_put_text_center(scr, 0, 150, scr->panel_game_width, 1, "PUSH SPACE KEY TO START");
+    screen_put_text_center(scr, 0, 166, scr->panel_game_width, 1, "OR ESC KEY TO EXIT");
+    screen_put_text_center(scr, 0, 210, scr->panel_game_width, 1, "2023 PRODUCED BY tantan");
 
     // key wait with 20 sec timeout
-    int32_t scan_code = wait_key(20);
+    int32_t scan_code = wait_key(20000);
     if (scan_code == KEY_SCAN_CODE_SPACE) {
       rc = 0;
       break;

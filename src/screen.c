@@ -24,14 +24,6 @@ void screen_open(SCREEN_HANDLE* scr) {
   }
   SP_ON();
 
-  scr->original_tpalette[0] = TPALET2(1,-1);
-  scr->original_tpalette[1] = TPALET2(2,-1);
-  scr->original_tpalette[2] = TPALET2(4,-1);          
-    
-  TPALET2(1, scr->text_colors[0]);
-  TPALET2(2, scr->text_colors[1]);
-  TPALET2(4, scr->text_colors[2]);
-
   scr->total_width = 384;
   scr->total_height = 512;
 
@@ -56,7 +48,22 @@ void screen_open(SCREEN_HANDLE* scr) {
   scr->text_colors[1] = 0x07c1;
   scr->text_colors[2] = 0xffc1;
 
-  screen_init_font(scr);
+  scr->original_tpalette[0] = TPALET2(1,-1);
+  scr->original_tpalette[1] = TPALET2(2,-1);
+  scr->original_tpalette[2] = TPALET2(4,-1);          
+    
+  TPALET2(1, scr->text_colors[0]);
+  TPALET2(2, scr->text_colors[1]);
+  TPALET2(4, scr->text_colors[2]);
+
+  for (int16_t i = 0; i < 256; i++) {
+    scr->font_data_8x8[i].xl = 8;
+    scr->font_data_8x8[i].yl = 8;
+    memcpy(scr->font_data_8x8[i].buffer, FONT_ADDR_8x8 + FONT_BYTES_8x8 * i, FONT_BYTES_8x8);
+    for (int16_t j = 0; j < FONT_BYTES_8x8; j++) {
+      scr->font_data_8x8[i].buffer[j] |= scr->font_data_8x8[i].buffer[j] >> 1;
+    }
+  }
 }
 
 // close screen
@@ -130,18 +137,6 @@ void screen_clear_panel_text(SCREEN_HANDLE* scr, int16_t panel) {
       TXFILL(&fill);
     }
 
-  }
-}
-
-// create 8x8 bold fonts
-void screen_init_font(SCREEN_HANDLE* scr) {
-  for (int16_t i = 0; i < 256; i++) {
-    scr->font_data_8x8[i].xl = 8;
-    scr->font_data_8x8[i].yl = 8;
-    memcpy(scr->font_data_8x8[i].buffer, FONT_ADDR_8x8 + FONT_BYTES_8x8 * i, FONT_BYTES_8x8);
-    for (int16_t j = 0; j < FONT_BYTES_8x8; j++) {
-      scr->font_data_8x8[i].buffer[j] |= scr->font_data_8x8[i].buffer[j] >> 1;
-    }
   }
 }
 

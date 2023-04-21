@@ -3,8 +3,7 @@
 #include "keyboard.h"
 #include "sprite.h"
 #include "adpcm.h"
-#include "data_logo.h"
-//#include "game.h"
+#include "game.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,10 +41,9 @@ int main(int argc, char* argv[]) {
   static ADPCM_HANDLE adpcm = { 0 };
   adpcm_open(&adpcm);
 
-/*
   // initialize game object
   static GAME_HANDLE game = { 0 };
-  game_open(&game, &scr, &sp_set, &adpcm_set, logo_data);
+  game_open(&game, &scr, &sprite, &adpcm);
 
   // game loop
   for (;;) {
@@ -96,10 +94,10 @@ int main(int argc, char* argv[]) {
     } while (rc == 0);
 
   }
-*/
+
 exit:
   // game close
-//  game_close(&game);
+  game_close(&game);
 
   // adpcm close
   adpcm_close(&adpcm);
