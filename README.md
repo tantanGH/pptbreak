@@ -60,6 +60,6 @@ X68000Z で直接起動するためのXDFはこちら
 
 ### なぜ PPT なのか？
 
-スプライトデータを作成に PowerPoint を使ったからですw
+スプライトデータの作成に PowerPoint を使ったからですw
 
 ![](images/demo3.png)
