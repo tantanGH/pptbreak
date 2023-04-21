@@ -8,10 +8,14 @@
 void adpcm_open(ADPCM_HANDLE* adpcm) {
   adpcm->mode = ADPCM_MODE_15KHZ_LR;
   memset(adpcm->chain_tables, 0, sizeof(struct CHAIN) * ADPCM_MAX_CHAINS);
-  ADPCMMOD(0);
+  adpcm_stop(adpcm);
 }
 
 void adpcm_close(ADPCM_HANDLE* adpcm) {
+  adpcm_stop(adpcm);
+}
+
+void adpcm_stop(ADPCM_HANDLE* adpcm) {
   ADPCMMOD(0);
 }
 

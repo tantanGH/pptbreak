@@ -1,19 +1,20 @@
+#include <stdint.h>
 #include "crtc.h"
 
 static void set_palette_65536() {
 
-  volatile unsigned short* palette_ptr = REG_PALETTE;
+  volatile uint16_t* palette_ptr = REG_PALETTE;
 
-  for (int i = 0x0001; i <= 0x10000; i += 0x0202) {
-    *palette_ptr++ = (unsigned short)i;
-    *palette_ptr++ = (unsigned short)i;
+  for (int32_t i = 0x0001; i <= 0x10000; i += 0x0202) {
+    *palette_ptr++ = (uint16_t)i;
+    *palette_ptr++ = (uint16_t)i;
   }
 }
 
-int crtc_set_mode(int mode) {
+int32_t crtc_set_mode(int16_t mode) {
 
   // return code
-  int rc = -1;
+  int32_t rc = -1;
 
   // wait vblank
   WAIT_VSYNC;
@@ -25,7 +26,7 @@ int crtc_set_mode(int mode) {
     case SCREEN_MODE_384x256: {
 
       // 512x256(384x256),31kHz,65536 colors
-      int current_resolution = REG_CRTC_R20[0] & 0x013;
+      uint16_t current_resolution = REG_CRTC_R20[0] & 0x013;
       if (current_resolution > 0x11) {
 
         REG_CRTC_R20[0] = 0x311;      // set first
@@ -87,7 +88,7 @@ int crtc_set_mode(int mode) {
     case SCREEN_MODE_512x512: {
 
       // 512x512(512x512),31kHz,65536 colors
-      int current_resolution = REG_CRTC_R20[0] & 0x013;
+      uint16_t current_resolution = REG_CRTC_R20[0] & 0x013;
       if (current_resolution > 0x15) {
 
         REG_CRTC_R20[0] = 0x315;      // set last
@@ -148,7 +149,7 @@ int crtc_set_mode(int mode) {
     case SCREEN_MODE_768x512: {
 
       // 512x512(768x512),31kHz,65536 colros
-      int current_resolution = REG_CRTC_R20[0] & 0x013;
+      uint16_t current_resolution = REG_CRTC_R20[0] & 0x013;
       if (current_resolution > 0x16) {
 
         REG_CRTC_R20[0] = 0x316;      // set first
@@ -251,5 +252,6 @@ int crtc_set_mode(int mode) {
 
   set_palette_65536();
 
+exit:
   return rc;
 }

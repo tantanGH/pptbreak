@@ -1,7 +1,9 @@
 #ifndef __H_DATA_SPRITE__
 #define __H_DATA_SPRITE__
 
-unsigned short sp_pattern_data_bar1[] = {
+#include <stdint.h>
+
+uint16_t sp_pattern_data_bar1[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0077,0x7777,0x0f88,0x8888,0x0bc3,0x3333,
@@ -45,11 +47,11 @@ unsigned short sp_pattern_data_bar1[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_bar1[] = {
+uint16_t sp_palette_data_bar1[] = {
     0x0000,0x0001,0x2281,0x7593,0xc7e5,0x961b,0x0001,0x3341,0x3401,0x538f,0xb7a1,0x2241,0x544b,0x0081,0x1981,0x2ac3,
 };
 
-unsigned short sp_pattern_data_ball1[] = {
+uint16_t sp_pattern_data_ball1[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,
@@ -63,12 +65,11 @@ unsigned short sp_pattern_data_ball1[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_ball1[] = {
+uint16_t sp_palette_data_ball1[] = {
     0x0000,0x5295,0x0001,0xffff,0xffff,0xe739,0xd6b5,0x0001,0xffff,0xf7bd,0x4211,0xffff,0x5ad7,0xc631,0x9ce7,0x6319,
 };
 
-
-unsigned short sp_pattern_data_block1[] = {
+uint16_t sp_pattern_data_block1[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x09ee,0xeeee,0x03dd,0xdddd,0x43dc,0xcccc,
@@ -92,11 +93,11 @@ unsigned short sp_pattern_data_block1[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_block1[] = {
+uint16_t sp_palette_data_block1[] = {
     0x0000,0xd6b5,0x294b,0x6319,0x5295,0x0001,0x8c63,0x6b5b,0x39cf,0x8421,0xb5ad,0x0001,0xad6b,0x9ce7,0x8421,0x5295,
 };
 
-unsigned short sp_pattern_data_block2[] = {
+uint16_t sp_pattern_data_block2[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0133,0x3333,0x0b77,0x7777,0x5b11,0x1111,
@@ -120,11 +121,11 @@ unsigned short sp_pattern_data_block2[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_block2[] = {
+uint16_t sp_palette_data_block2[] = {
     0x0000,0xe7db,0x0001,0xa525,0xffe7,0x5ad9,0x4a55,0xbe9d,0x8459,0x4a53,0x39d1,0x7c1b,0x290b,0x5257,0x2109,0x3a11,
 };
 
-unsigned short sp_pattern_data_block3[] = {
+uint16_t sp_pattern_data_block3[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0ce2,0x2222,0xb922,0x2222,0x8911,0x1111,
@@ -148,11 +149,11 @@ unsigned short sp_pattern_data_block3[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_block3[] = {
+uint16_t sp_palette_data_block3[] = {
     0x0000,0xb4b9,0x9469,0xee7f,0x39cf,0xc53d,0x0843,0x5295,0x5ad5,0x7ba1,0x6319,0x5ad5,0x8421,0x1907,0x8c63,0x0001,
 };
 
-unsigned short sp_pattern_data_star1[] = {
+uint16_t sp_pattern_data_star1[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0030,0x0000,0x0453,0x0000,0x0340,0x0000,
@@ -166,11 +167,11 @@ unsigned short sp_pattern_data_star1[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_star1[] = {
+uint16_t sp_palette_data_star1[] = {
     0x0000,0x0001,0xffff,0xffff,0xffff,0xffff,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,
 };
 
-unsigned short sp_pattern_data_star2[] = {
+uint16_t sp_pattern_data_star2[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0000,0x0000,0x0020,0x0000,0x0463,0x0000,
@@ -184,11 +185,11 @@ unsigned short sp_pattern_data_star2[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_star2[] = {
+uint16_t sp_palette_data_star2[] = {
     0x0000,0x0001,0xf7bd,0xf7bd,0xef7b,0xffff,0xf7bd,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,
 };
 
-unsigned short sp_pattern_data_star3[] = {
+uint16_t sp_pattern_data_star3[] = {
 
     /* sprite pattern data 0 */
     0x0000,0x0000,0x0000,0x0000,0x0220,0x0000,0x0230,0x0000,
@@ -202,7 +203,7 @@ unsigned short sp_pattern_data_star3[] = {
 };
 
 /* palette data */
-unsigned short sp_palette_data_star3[] = {
+uint16_t sp_palette_data_star3[] = {
     0x0000,0x0001,0xcfab,0xcfeb,0xffdf,0x7fdf,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,0x0001,
 };
 

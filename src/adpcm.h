@@ -23,5 +23,6 @@ void adpcm_open(ADPCM_HANDLE* adpcm);
 void adpcm_close(ADPCM_HANDLE* adpcm);
 void adpcm_play_se(ADPCM_HANDLE* adpcm, int16_t id);
 void adpcm_play_music(ADPCM_HANDLE* adpcm, int16_t id);
+void adpcm_stop(ADPCM_HANDLE* adpcm);
 
 #endif

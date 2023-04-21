@@ -19,8 +19,7 @@ HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/LK.X #hlk301.x だと out of memory になってしまう
 
 # 実行ファイル名
-#TARGET_FILE = PPTBREAK.X
-TARGET_FILE = adpcm_test.x
+TARGET_FILE = PPTBREAK.X
 
 # Document file
 DOCUMENT_FILE = PPTBREAK.DOC
@@ -37,7 +36,7 @@ CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall
     -fexec-charset=cp932 -fverbose-asm -fno-defer-pop
 
 # *.c ソースファイル
-C_SRCS = adpcm.c adpcm_test.c #crtc.c screen.c sprite.c adpcm.c game.c main.c
+C_SRCS = adpcm.c crtc.c sprite.c screen.c data_logo.c game.c main.c
 
 # *.s ソースファイル
 ASM_SRCS = data_se.s data_music.s
