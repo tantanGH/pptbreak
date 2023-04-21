@@ -52,7 +52,12 @@ void game_reset(GAME_HANDLE* game) {
     game->high_score = game->score;
   }
   game->score = 0;
-  game->round = 1;
+
+  if ((B_SFTSNS() & 0x03) == 0x03) {
+    game->round = 4;
+  } else {
+    game->round = 1;
+  }
 }
 
 // opening
