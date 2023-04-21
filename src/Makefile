@@ -25,7 +25,7 @@ TARGET_FILE = PPTBREAK.X
 DOCUMENT_FILE = PPTBREAK.DOC
 
 # Distribution package 
-PACKAGE_FILE = ../PPTBK011.ZIP
+PACKAGE_FILE = ../PPTBK020.ZIP
 
 # ヘッダ検索パス
 INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
@@ -36,10 +36,10 @@ CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall
     -fexec-charset=cp932 -fverbose-asm -fno-defer-pop
 
 # *.c ソースファイル
-C_SRCS = crtc.c screen.c sprite.c adpcm.c game.c main.c
+C_SRCS = adpcm.c crtc.c sprite.c screen.c data_logo.c game.c main.c
 
 # *.s ソースファイル
-ASM_SRCS = data_adpcm.s data_music.s
+ASM_SRCS = data_se.s data_music.s
 
 # リンク対象のライブラリファイル
 LIBS =\

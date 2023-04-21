@@ -1,12 +1,13 @@
+
+#include <stdint.h>
+#include <string.h>
+#include <iocslib.h>
+#include <doslib.h>
 #include "screen.h"
 #include "crtc.h"
 
-#include <iocslib.h>
-#include <doslib.h>
-#include <string.h>
-
 // clear and initialize screen and sprites
-void screen_init(SCREEN_HANDLE* scr) {
+void screen_open(SCREEN_HANDLE* scr) {
 
   CRTMOD(12);
   G_CLR_ON();
@@ -18,10 +19,34 @@ void screen_init(SCREEN_HANDLE* scr) {
   crtc_set_mode(SCREEN_MODE_384x256);
 
   SP_INIT();
-  for (int i = 0; i < 256; i++) {
+  for (int16_t i = 0; i < 256; i++) {
     SP_CGCLR(i);
   }
   SP_ON();
+
+  scr->total_width = 384;
+  scr->total_height = 512;
+
+  scr->panel_game_width = 288;
+  scr->panel_game_height = 256;
+  scr->panel_game_depth = 2880;
+  scr->panel_game_x = 0;
+  scr->panel_game_y = 0;
+
+  scr->panel_score_width = 96;
+  scr->panel_score_height = 256;
+  scr->panel_score_x = 288;
+  scr->panel_score_y = 0;
+
+  scr->panel_colors[0] = 0x0000;
+  scr->panel_colors[1] = 0x794b;
+  scr->panel_colors[2] = 0x18e1;
+  scr->panel_colors[3] = 0x248b;  
+  scr->panel_colors[4] = 0x515f;  
+
+  scr->text_colors[0] = 0xffff;
+  scr->text_colors[1] = 0x07c1;
+  scr->text_colors[2] = 0xffc1;
 
   scr->original_tpalette[0] = TPALET2(1,-1);
   scr->original_tpalette[1] = TPALET2(2,-1);
@@ -30,10 +55,23 @@ void screen_init(SCREEN_HANDLE* scr) {
   TPALET2(1, scr->text_colors[0]);
   TPALET2(2, scr->text_colors[1]);
   TPALET2(4, scr->text_colors[2]);
+
+  for (int16_t i = 0; i < 256; i++) {
+    scr->font_data_8x8[i].xl = 8;
+    scr->font_data_8x8[i].yl = 8;
+    memcpy(scr->font_data_8x8[i].buffer, FONT_ADDR_8x8 + FONT_BYTES_8x8 * i, FONT_BYTES_8x8);
+    for (int16_t j = 0; j < FONT_BYTES_8x8; j++) {
+      scr->font_data_8x8[i].buffer[j] |= scr->font_data_8x8[i].buffer[j] >> 1;
+    }
+  }
 }
 
-// reset screen
-void screen_reset(SCREEN_HANDLE* scr) {
+// close screen
+void screen_close(SCREEN_HANDLE* scr) {
+
+  // resume screen
+  screen_clear_panel_text(scr,0);
+  screen_clear_panel_text(scr,1);
 
   crtc_set_mode(SCREEN_MODE_768x512);
 
@@ -49,7 +87,7 @@ void screen_reset(SCREEN_HANDLE* scr) {
 }
 
 // fill panel (graphic)
-void screen_fill_panel(SCREEN_HANDLE* scr, int panel, int color) {
+void screen_fill_panel(SCREEN_HANDLE* scr, int16_t panel, int16_t color) {
   if (panel == 0) {
     // game panel
     struct FILLPTR fill = {
@@ -72,11 +110,10 @@ void screen_fill_panel(SCREEN_HANDLE* scr, int panel, int color) {
 }
 
 // fill panel (text)
-void screen_clear_panel_text(SCREEN_HANDLE* scr, int panel) {
+void screen_clear_panel_text(SCREEN_HANDLE* scr, int16_t panel) {
   if (panel == 0) {
-
     // game panel
-    for (int i = 0; i < 4; i++) {
+    for (int16_t i = 0; i < 4; i++) {
       struct TXFILLPTR fill = {
         i,
         scr->panel_game_x,
@@ -88,9 +125,8 @@ void screen_clear_panel_text(SCREEN_HANDLE* scr, int panel) {
     }
 
   } else if (panel == 1) {
-
     // score panel
-    for (int i = 0; i < 4; i++) {
+    for (int16_t i = 0; i < 4; i++) {
       struct TXFILLPTR fill = {
         i,
         scr->panel_score_x,
@@ -104,36 +140,24 @@ void screen_clear_panel_text(SCREEN_HANDLE* scr, int panel) {
   }
 }
 
-// create 8x8 bold fonts
-void screen_init_font(SCREEN_HANDLE* scr) {
-  for (int i = 0; i < 256; i++) {
-    scr->font_data_8x8[i].xl = 8;
-    scr->font_data_8x8[i].yl = 8;
-    memcpy(scr->font_data_8x8[i].buffer, FONT_ADDR_8x8 + FONT_BYTES_8x8 * i, FONT_BYTES_8x8);
-    for (int j = 0; j < FONT_BYTES_8x8; j++) {
-      scr->font_data_8x8[i].buffer[j] |= scr->font_data_8x8[i].buffer[j] >> 1;
-    }
-  }
-}
-
 // put text in 8x8 bold font
-void screen_put_text(SCREEN_HANDLE* scr, int x, int y, int color, const char* text) {
-  int len = strlen(text);
+void screen_put_text(SCREEN_HANDLE* scr, int16_t x, int16_t y, int16_t color, uint8_t* text) {
+  int16_t len = strlen(text);
   TCOLOR(color);
-  for (int i = 0; i < len; i++) { 
+  for (int16_t i = 0; i < len; i++) { 
     TEXTPUT(x + 8*i, y, &scr->font_data_8x8[text[i]]);
   }
 }
 
 // put text in 8x8 bold font with centering
-void screen_put_text_center(SCREEN_HANDLE* scr, int x, int y, int width, int color, const char* text) {
-  int len = strlen(text);
-  int cx = x + ((width - 8 * len)>>1);
+void screen_put_text_center(SCREEN_HANDLE* scr, int16_t x, int16_t y, int16_t width, int16_t color, uint8_t* text) {
+  int16_t len = strlen(text);
+  int16_t cx = x + ((width - 8 * len)>>1);
   screen_put_text(scr,cx,y,color,text);
 }
 
 // scroll screen (graphic)
-void screen_scroll(SCREEN_HANDLE* scr, int x, int y) {
+void screen_scroll(SCREEN_HANDLE* scr, int16_t x, int16_t y) {
   SCROLL(0, x % scr->total_width, y % scr->total_height);
   SCROLL(1, x % scr->total_width, y % scr->total_height);
   SCROLL(2, x % scr->total_width, y % scr->total_height);
@@ -141,13 +165,13 @@ void screen_scroll(SCREEN_HANDLE* scr, int x, int y) {
 }
 
 // put image dump dat to gvram
-void screen_put_image(SCREEN_HANDLE* scr, int x, int y, int width, int height, unsigned short* image_data) {
+void screen_put_image(SCREEN_HANDLE* scr, int16_t x, int16_t y, int16_t width, int16_t height, uint16_t* image_data) {
 
-  unsigned short* p = image_data;
+  uint16_t* p = image_data;
 
-  for (int i = 0; i < height; i++) {
-    volatile unsigned short* gvram = REG_GVRAM + ( y + i ) * 512 + x;
-    for (int j = 0; j < width; j++) {
+  for (int16_t i = 0; i < height; i++) {
+    volatile uint16_t* gvram = REG_GVRAM + ( y + i ) * 512 + x;
+    for (int16_t j = 0; j < width; j++) {
       gvram[ j ] = *p++;
     }
   }

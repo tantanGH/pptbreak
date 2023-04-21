@@ -1,8 +1,10 @@
 #ifndef __H_DATA_MUSIC__
 #define __H_DATA_MUSIC__
 
-#define ADPCM_DATA_MUSIC1_LENGTH (62500)
+#include <stdint.h>
 
-extern unsigned char adpcm_data_music1[ ADPCM_DATA_MUSIC1_LENGTH ];
+#define ADPCM_MUSIC01_LENGTH (141020)
+
+extern uint8_t adpcm_music01[ ADPCM_MUSIC01_LENGTH ];
 
 #endif
